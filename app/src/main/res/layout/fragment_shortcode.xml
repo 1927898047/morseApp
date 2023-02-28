@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@color/white">
+
+
+    <RadioGroup
+        android:id="@+id/pcmRadioGroup2"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bt_charToMorse">
+
+        <RadioButton
+            android:id="@+id/wpmButton_35"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:buttonTint="#F4606C"
+            android:text="35wpm"
+            android:textColor="@color/design_default_color_primary_dark"
+            android:textSize="16sp" />
+
+        <RadioButton
+            android:id="@+id/wpmButton_40"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:buttonTint="#F4606C"
+            android:text="40wpm"
+            android:textColor="@color/design_default_color_primary_dark"
+
+            android:textSize="16sp" />
+
+        <RadioButton
+            android:id="@+id/wpmButton_45"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:buttonTint="#F4606C"
+            android:text="45wpm"
+            android:textColor="@color/design_default_color_primary_dark"
+            android:textSize="16sp" />
+
+        <RadioButton
+            android:id="@+id/wpmButton_50"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:buttonTint="#F4606C"
+            android:text="50wpm"
+            android:textColor="@color/design_default_color_primary_dark"
+            android:textSize="16sp" />
+    </RadioGroup>
+
+    <RadioGroup
+        android:id="@+id/pcmRadioGroup1"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:checkedButton="@id/wpmButton_15"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pcmRadioGroup2">
+
+        <RadioButton
+            android:id="@+id/wpmButton_15"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:buttonTint="#F4606C"
+            android:text="15wpm"
+            android:textColor="@color/design_default_color_primary_dark"
+            android:textSize="16sp" />
+
+        <RadioButton
+            android:id="@+id/wpmButton_20"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:buttonTint="#F4606C"
+            android:text="20wpm"
+            android:textColor="@color/design_default_color_primary_dark"
+
+            android:textSize="16sp" />
+
+        <RadioButton
+            android:id="@+id/wpmButton_25"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:buttonTint="#F4606C"
+            android:text="25wpm"
+            android:textColor="@color/design_default_color_primary_dark"
+            android:textSize="16sp" />
+
+        <RadioButton
+            android:id="@+id/wpmButton_30"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:buttonTint="#F4606C"
+            android:text="30wpm"
+            android:textColor="@color/design_default_color_primary_dark"
+            android:textSize="16sp" />
+    </RadioGroup>
+
+
+    <TextView
+        android:id="@+id/tv_output"
+        android:layout_width="323dp"
+        android:layout_height="55dp"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginEnd="50dp"
+        android:background="@drawable/translucent"
+        android:enabled="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:longClickable="true"
+        android:text=""
+        android:textIsSelectable="true"
+        android:textSize="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="SpeakableTextPresentCheck" />
+
+
+    <Button
+        android:id="@+id/bt_createAudio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="128dp"
+        android:layout_marginTop="44dp"
+        android:layout_marginEnd="129dp"
+        android:layout_marginBottom="80dp"
+        android:text="3.编码并播放音频"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pcmRadioGroup1" />
+
+
+    <EditText
+        android:id="@+id/tv_input"
+        android:layout_width="323dp"
+        android:layout_height="68dp"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="50dp"
+        android:background="@drawable/translucent"
+        android:ems="10"
+        android:gravity="center"
+        android:hint="1.请输入数字字符"
+        android:inputType="textPersonName"
+        android:minHeight="48dp"
+        android:textCursorDrawable="@drawable/edittext_cursor"
+        android:textSize="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_output"
+        tools:ignore="TouchTargetSizeCheck" />
+
+    <Button
+        android:id="@+id/bt_charToMorse"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_marginStart="100dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="100dp"
+        android:text="2.字符转摩尔斯码"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_input" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

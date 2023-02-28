@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="audio_button" type="id" />
+    <item name="morse_to_char_button" type="id" />
+    <item name="input_text" type="id" />
+    <item name="output" type="id" />
+    <item name="char_to_morse_button" type="id" />
+    <item name="switch_to_shortCode_button" type="id" />
+</resources>

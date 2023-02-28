@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activity.MainActivity">
+
+    <FrameLayout
+        android:id="@+id/fragment_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        />
+
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/rg_group"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        >
+        <RadioButton
+            android:id="@+id/rb_shortCode"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:button="@null"
+            android:textColor="@drawable/rb_text_color"
+            android:textSize="16dp"
+            android:gravity="center"
+            android:text="短码发送"
+            />
+        <RadioButton
+            android:id="@+id/rb_longCode"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:button="@null"
+            android:textColor="@drawable/rb_text_color"
+            android:gravity="center"
+            android:textSize="16dp"
+
+            android:text="长码发送"
+            />
+        <RadioButton
+            android:id="@+id/rb_audio"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:button="@null"
+            android:textColor="@drawable/rb_text_color"
+            android:gravity="center"
+            android:textSize="16dp"
+
+            android:text="录音解码"
+            />
+        <RadioButton
+            android:id="@+id/rb_socket"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:button="@null"
+            android:textColor="@drawable/rb_text_color"
+            android:gravity="center"
+            android:textSize="16dp"
+
+            android:text="网络通信"
+            />
+        <RadioButton
+            android:id="@+id/rb_settings"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:button="@null"
+            android:textColor="@drawable/rb_text_color"
+            android:gravity="center"
+            android:textSize="16dp"
+
+            android:text="设置"
+            />
+    </RadioGroup>
+</RelativeLayout>
