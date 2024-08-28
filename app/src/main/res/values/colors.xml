@@ -7,4 +7,7 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="back_color">#90C7AA</color><!--中绿色 -->
+    <color name="text_color">#1C1C1C</color><!--炭黑色 -->
+    <color name="wpm_color">#F4606C</color><!--一种红色 -->
 </resources>

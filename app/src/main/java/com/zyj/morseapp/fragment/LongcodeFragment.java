@@ -151,26 +151,47 @@ public class LongcodeFragment extends Fragment {
                         //大端序转小端序
                         ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().put(shorts);
                         byte[] header = morseAudio.writeWavFileHeader(shorts.length*2, 8000, 1, 16);
-                        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                        byteArrayOutputStream.write(header);
-                        byteArrayOutputStream.write(bytes);
-                        byte[] byteArray = byteArrayOutputStream.toByteArray();
+
+                        //生成wav文件
+                        ByteArrayOutputStream byteArrayOutputStream_WAV = new ByteArrayOutputStream();
+                        byteArrayOutputStream_WAV.write(header);
+                        byteArrayOutputStream_WAV.write(bytes);
+                        byte[] byteArray = byteArrayOutputStream_WAV.toByteArray();
                         //创建文件
                         File filesDir = context.getFilesDir();
-                        String Path=filesDir.toString()+"/morse_shortCode.wav";
-                        File file = new File(Path);
-                        if(file.exists()){
-                            file.delete();
+                        String Path_WAV=filesDir.toString()+"/morse_longCode.wav";
+                        System.out.println(Path_WAV);
+                        File file_WAV = new File(Path_WAV);
+                        if(file_WAV.exists()){
+                            file_WAV.delete();
                         }
-                        file.createNewFile();//创建MorseCode.wav文件
+                        file_WAV.createNewFile();//创建MorseCode.wav文件
                         //覆盖写入
-                        OutputStream os = new FileOutputStream(file);
-                        os.write(byteArray);
-                        os.close();
+                        OutputStream os_WAV = new FileOutputStream(file_WAV);
+                        os_WAV.write(byteArray);
+                        os_WAV.close();
+
+                        //生成pcm文件
+                        ByteArrayOutputStream byteArrayOutputStream_PCM = new ByteArrayOutputStream();
+                        byteArrayOutputStream_PCM.write(bytes);
+                        byteArray = byteArrayOutputStream_PCM.toByteArray();
+                        //创建文件
+                        String Path_PCM=filesDir.toString()+"/morse_longCode.pcm";
+                        System.out.println(Path_PCM);
+                        File file_PCM = new File(Path_PCM);
+                        if(file_PCM.exists()){
+                            file_PCM.delete();
+                        }
+                        file_PCM.createNewFile();//创建MorseCode.wav文件
+                        //覆盖写入
+                        OutputStream os_PCM = new FileOutputStream(file_PCM);
+                        os_PCM.write(byteArray);
+                        os_PCM.close();
+
                         Toast.makeText(context,"音频已生成",Toast.LENGTH_LONG).show();
                         //初始化mediaPlayer
                         MediaPlayer mediaPlayer=new MediaPlayer();
-                        mediaPlayer.setDataSource(Path);
+                        mediaPlayer.setDataSource(Path_WAV);
                         mediaPlayer.prepare();
                         mediaPlayer.setLooping(false);  // 设置非循环播放
 

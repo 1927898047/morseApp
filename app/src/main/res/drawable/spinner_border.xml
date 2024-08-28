@@ -1,0 +1,7 @@
+<!-- res/drawable/spinner_border.xml -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#008b8b"/> <!-- 背景颜色 -->
+    <stroke android:width="2dp" android:color="#008b8b"/> <!-- 边框宽度和颜色 -->
+    <padding android:left="2dp" android:top="2dp" android:right="2dp" android:bottom="2dp"/> <!-- 内边距 -->
+    <corners android:radius="2dp"/> <!-- 边框圆角 -->
+</shape>

@@ -1,11 +1,14 @@
 package com.zyj.morseapp.audio;
 
 
+import com.zyj.morseapp.pages.HalfDuplex;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * 摩尔斯音频的生成类
@@ -27,12 +30,19 @@ public class MorseAudio {
 
     private final String intervalString = "/";
 
+    private boolean changeSnr = false;
+
+    public void setChangeSnr(boolean changeSnr) {
+        this.changeSnr = changeSnr;
+    }
+
     /**
      * 将摩尔斯电码转成音频
      * @param codeString 摩尔斯电码
      * @return 音频流
      */
     public short[] codeConvert2Sound(String codeString,int wpm){
+        System.out.println("wpm:"+wpm);
         int dit = ditRatio;
         int dah = dahRatio;
         int interval = intervalRatio;
@@ -45,9 +55,11 @@ public class MorseAudio {
         // 采样率
         float SampleRate=8000;
         // 开始加一段空的音频
+        System.out.println("开始加一段空的音频:"+pcmAudio.size());
         soundLength = 10;
         frequency = 0;
         addPcmWave(SampleRate,wpm,soundLength,frequency,pcmAudio);
+        System.out.println("开始加一段空的音频:"+pcmAudio.size());
         //计算每一个字符的音波
         for(int i=0; i<codeString.length(); i++){
             String code = Character.toString(codeString.charAt(i));
@@ -80,10 +92,11 @@ public class MorseAudio {
         }
 
         // 结尾加一段空的音频
-        soundLength =2;
+        soundLength = 10;
         frequency = 0;
         addPcmWave(SampleRate,wpm,soundLength,frequency,pcmAudio);
 
+        System.out.println("结尾加一段空的音频:"+pcmAudio.size());
 
         //将list转array
         short[] audio = new short[pcmAudio.size()];
@@ -91,6 +104,7 @@ public class MorseAudio {
             audio[i] = pcmAudio.get(i);
         }
 
+        pcmAudio.clear();
 
         return audio;
     }
@@ -98,16 +112,19 @@ public class MorseAudio {
 
     public void addPcmWave(float SampleRate,int wpm,int soundLength,long frequency,ArrayList<Short> pcmAudio){
         // 生成PCM波
-        for ( int k = 0; k < soundLength * SampleRate / (5*wpm/6); k++ ) {
+        for ( int k = 0; k < 80*soundLength * SampleRate / (5*wpm/6)/84; k++ ) {
             double angle = k / ( SampleRate / frequency ) * 2.0 * Math.PI;
-            pcmAudio.add( (short)( Math.sin( angle ) *20000 ) );
+
+            Random random = new Random();
+            double randomNum = random.nextDouble();
+            // 判断是否需要调整信噪比
+            if (changeSnr) {
+                pcmAudio.add( (short)( Math.sin( angle ) *8000 + Math.sin(randomNum) * HalfDuplex.gussianNoise));
+            } else {
+                pcmAudio.add( (short)( Math.sin( angle ) *8000 + Math.sin(randomNum) *4000));
+            }
         }
     }
-
-
-
-
-
 
 
     /**

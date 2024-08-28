@@ -13,9 +13,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import com.zyj.morseapp.R;
-import com.zyj.morseapp.Utils.ArraysUtils;
-import com.zyj.morseapp.Utils.FileUtils;
-import com.zyj.morseapp.Utils.PostUtils;
+import com.zyj.morseapp.utils.ArraysUtils;
+import com.zyj.morseapp.utils.FileUtils;
+import com.zyj.morseapp.utils.PostUtils;
 import com.zyj.morseapp.application.MyApplication;
 
 import java.util.Arrays;

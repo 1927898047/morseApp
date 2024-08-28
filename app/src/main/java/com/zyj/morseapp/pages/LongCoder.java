@@ -16,6 +16,9 @@ import com.zyj.morseapp.R;
 import com.zyj.morseapp.application.MyApplication;
 import com.zyj.morseapp.audio.MorseAudio;
 import com.zyj.morseapp.morsecoder.MorseLongCoder;
+import com.zyj.morseapp.utils.FileUtils;
+import com.zyj.morseapp.utils.ptt.CWEncoder;
+import com.zyj.morseapp.utils.ptt.MyAudio;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -37,15 +40,31 @@ public class LongCoder extends AppCompatActivity {
     private RadioGroup pcmRadioGroup2=null;
     private Button switch_to_socket_button=null;
     private Button button_switch_record=null;
+    private Button half_duplex_button = null;
     private Context context=null;
-
+    public static String longMorseContentForPtt = "";
     String str_char="";
     String str_morse="";
 
+
     // 码速（words per minute）
-    private int wpm=20;
+    public int wpm=15;
+
+    // 是否在播放PTT的同时播放音频
+    private boolean isPlayAudio;
+
 
     Intent intent=null;
+
+    public void setWpm(int val){
+        this.wpm=val;
+        System.out.println("wpm:"+wpm);
+    }
+
+    public int getWpm(){
+        System.out.println("wpm:"+this.wpm);
+        return this.wpm;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +80,7 @@ public class LongCoder extends AppCompatActivity {
         char_to_morse_button=findViewById(R.id.char_to_morse_button);
         audio_button=findViewById(R.id.audio_button);
         switch_nextPage = findViewById(R.id.switch_to_shortCode_button);
+        half_duplex_button = findViewById(R.id.half_duplex_button);
 
         pcmRadioGroup1 = findViewById(R.id.pcmRadioGroup1);
         pcmRadioGroup2 = findViewById(R.id.pcmRadioGroup2);
@@ -72,6 +92,7 @@ public class LongCoder extends AppCompatActivity {
         audio_button.setOnClickListener(myOnClick);
         char_to_morse_button.setOnClickListener(myOnClick);
         switch_nextPage.setOnClickListener(myOnClick);
+        half_duplex_button.setOnClickListener(myOnClick);
 
         pcmRadioGroup1.setOnCheckedChangeListener(new MyPcm());
         pcmRadioGroup2.setOnCheckedChangeListener(new MyPcm());
@@ -79,6 +100,7 @@ public class LongCoder extends AppCompatActivity {
         switch_to_socket_button.setOnClickListener(myOnClick);
         button_switch_record.setOnClickListener(myOnClick);
         context= MyApplication.getContext();
+
 
     }
 
@@ -90,48 +112,42 @@ public class LongCoder extends AppCompatActivity {
         public void onCheckedChanged(RadioGroup group, int checkedId) {
             switch (checkedId){
                 case R.id.wpmButton_15:
-                    wpm=15;
-                    System.out.println(wpm);
+                    setWpm(15);
                     pcmRadioGroup2.clearCheck();
                     break;
                 case R.id.wpmButton_20:
-                    wpm=20;
-                    System.out.println(wpm);
+                    setWpm(20);
+
                     pcmRadioGroup2.clearCheck();
                     break;
                 case R.id.wpmButton_25:
-                    wpm=25;
-                    System.out.println(wpm);
+                    setWpm(25);
+
 
                     pcmRadioGroup2.clearCheck();
                     break;
                 case R.id.wpmButton_30:
-                    wpm=30;
-                    System.out.println(wpm);
+                    setWpm(30);
 
                     pcmRadioGroup2.clearCheck();
                     break;
                 case R.id.wpmButton_35:
-                    wpm=35;
-                    System.out.println(wpm);
+                    setWpm(35);
+
 
                     pcmRadioGroup1.clearCheck();
                     break;
                 case R.id.wpmButton_40:
-                    wpm=40;
-                    System.out.println(wpm);
+                    setWpm(40);
 
                     pcmRadioGroup1.clearCheck();
                     break;
                 case R.id.wpmButton_45:
-                    wpm=45;
-                    System.out.println(wpm);
-
+                    setWpm(45);
                     pcmRadioGroup1.clearCheck();
                     break;
                 case R.id.wpmButton_50:
-                    wpm=50;
-                    System.out.println(wpm);
+                    setWpm(50);
 
                     pcmRadioGroup1.clearCheck();
                     break;
@@ -166,6 +182,7 @@ public class LongCoder extends AppCompatActivity {
                         str_morse= morseLongCoder.encode(str_char);
                         output_text.setText(str_morse);
                     }
+                    longMorseContentForPtt = str_morse;
                     break;
                 case R.id.audio_button:
                     try {
@@ -173,37 +190,85 @@ public class LongCoder extends AppCompatActivity {
                             Toast.makeText(LongCoder.this,"输入内容为空，无法进行编码！",Toast.LENGTH_LONG).show();
                             break;
                         }
-                        short[] shorts = morseAudio.codeConvert2Sound(str_morse,wpm);
+                        short[] shorts = morseAudio.codeConvert2Sound(str_morse,getWpm());
                         byte[] bytes=new byte[shorts.length*2];
                         //大端序转小端序
                         ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().put(shorts);
                         byte[] header = morseAudio.writeWavFileHeader(shorts.length*2, 8000, 1, 16);
-                        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                        byteArrayOutputStream.write(header);
-                        byteArrayOutputStream.write(bytes);
-                        byte[] byteArray = byteArrayOutputStream.toByteArray();
+                        //生成wav文件
+                        ByteArrayOutputStream byteArrayOutputStream_WAV = new ByteArrayOutputStream();
+                        byteArrayOutputStream_WAV.write(header);
+                        byteArrayOutputStream_WAV.write(bytes);
+                        byte[] byteArray = byteArrayOutputStream_WAV.toByteArray();
                         //创建文件
-                        String Path=getExternalFilesDir("").getAbsolutePath()+"/morse_longCode.wav";
-                        File file = new File(Path);
-
-                        if(file.exists()){
-                            file.delete();
+                        String Path_WAV=getExternalFilesDir("").getAbsolutePath()+"/morse_longCode.wav";
+                        System.out.println(Path_WAV);
+                        File file_WAV = new File(Path_WAV);
+                        if(file_WAV.exists()){
+                            System.out.println("删除morse_longCode.wav");
+                            file_WAV.delete();
                         }
-                        file.createNewFile();//创建MorseCode.wav文件
-                        OutputStream os = new FileOutputStream(file);
-                        os.write(byteArray);
-                        os.close();
-                        Toast.makeText(LongCoder.this,"音频已生成",Toast.LENGTH_LONG).show();
+                        file_WAV.createNewFile();//创建MorseCode.wav文件
+                        //覆盖写入
+                        OutputStream os_WAV = new FileOutputStream(file_WAV);
+                        os_WAV.write(byteArray);
+                        os_WAV.close();
 
+                        //生成pcm文件
+                        ByteArrayOutputStream byteArrayOutputStream_PCM = new ByteArrayOutputStream();
+                        byteArrayOutputStream_PCM.write(bytes);
+                        byteArray = byteArrayOutputStream_PCM.toByteArray();
+                        //创建文件
+                        String Path_PCM=getExternalFilesDir("").getAbsolutePath()+"/morse_longCode.pcm";
+                        System.out.println(Path_PCM);
+                        File file_PCM = new File(Path_PCM);
+                        if(file_PCM.exists()){
+                            System.out.println("删除morse_longCode.pcm");
+                            file_PCM.delete();
+                        }
+                        file_PCM.createNewFile();//创建MorseCode.wav文件
+                        //覆盖写入
+                        OutputStream os_PCM = new FileOutputStream(file_PCM);
+                        os_PCM.write(byteArray);
+                        os_PCM.close();
 
-                        //初始化mediaPlayer
-                        MediaPlayer mediaPlayer=new MediaPlayer();
-                        mediaPlayer.setDataSource(Path);
-                        mediaPlayer.prepare();
-                        mediaPlayer.setLooping(false);  // 设置非循环播放
+                        try {
+                            isPlayAudio = FileUtils.readTxt(context.getExternalFilesDir("").getAbsolutePath()+"/isPlayAudio.txt").equals("1");
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        if (isPlayAudio){
+                            // 异步播放音频
+                            new Thread(){
+                                @Override
+                                public void run() {
+                                    //初始化mediaPlayer
+                                    MediaPlayer mediaPlayer=new MediaPlayer();
+                                    try {
+                                        mediaPlayer.setDataSource(Path_WAV);
+                                        mediaPlayer.prepare();
+                                        mediaPlayer.setLooping(false);  // 设置非循环播放
+                                        //开始播放
+                                        mediaPlayer.start();
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }.start();
+                        }
 
-                        //开始播放
-                        mediaPlayer.start();
+                        //异步发送 ptt脉冲输出
+                        System.out.println("LongCoder.longMorseContentForPtt:" + str_morse);
+                        System.out.println("longWpm:" + wpm);
+                        new Thread(){
+                            @Override
+                            public void run() {
+                                MorseAudio morseAudioObj2 = new MorseAudio();
+                                short[] longMorseStrArr = morseAudioObj2.codeConvert2Sound(str_morse, wpm);
+                                MyAudio.getInstance().playMorse(longMorseStrArr, longMorseStrArr.length, str_morse, wpm);
+                            }
+                        }.start();
+
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -224,6 +289,9 @@ public class LongCoder extends AppCompatActivity {
                     intent.setClass(LongCoder.this, AudioRecords.class);
                     startActivity(intent);
                     break;
+                case R.id.half_duplex_button:
+                    intent.setClass(LongCoder.this, HalfDuplex.class);
+                    startActivity(intent);
                 default:
                     break;
             }

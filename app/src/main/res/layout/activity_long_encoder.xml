@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:background="@color/white"
+    android:layout_height="match_parent"
+    android:background="@color/back_color"
     tools:context=".pages.ShortCoder">
 
 
@@ -18,12 +18,13 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/char_to_morse_button">
+
         <RadioButton
             android:id="@+id/wpmButton_35"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:buttonTint="#F4606C"
-            android:text="35wpm"
+            android:text="@string/wpmButton_35"
             android:textColor="@color/design_default_color_primary_dark"
             android:textSize="16sp" />
 
@@ -32,7 +33,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:buttonTint="#F4606C"
-            android:text="40wpm"
+            android:text="@string/wpmButton_40"
             android:textColor="@color/design_default_color_primary_dark"
 
             android:textSize="16sp" />
@@ -42,7 +43,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:buttonTint="#F4606C"
-            android:text="45wpm"
+            android:text="@string/wpmButton_45"
             android:textColor="@color/design_default_color_primary_dark"
             android:textSize="16sp" />
 
@@ -51,7 +52,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:buttonTint="#F4606C"
-            android:text="50wpm"
+            android:text="@string/wpmButton_50"
             android:textColor="@color/design_default_color_primary_dark"
             android:textSize="16sp" />
     </RadioGroup>
@@ -72,7 +73,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:buttonTint="#F4606C"
-            android:text="15wpm"
+            android:text="@string/wpmButton_15"
             android:textColor="@color/design_default_color_primary_dark"
             android:textSize="16sp" />
 
@@ -81,9 +82,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:buttonTint="#F4606C"
-            android:text="20wpm"
+            android:text="@string/wpmButton_20"
             android:textColor="@color/design_default_color_primary_dark"
-
             android:textSize="16sp" />
 
         <RadioButton
@@ -91,7 +91,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:buttonTint="#F4606C"
-            android:text="25wpm"
+            android:text="@string/wpmButton_25"
             android:textColor="@color/design_default_color_primary_dark"
             android:textSize="16sp" />
 
@@ -100,7 +100,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:buttonTint="#F4606C"
-            android:text="30wpm"
+            android:text="@string/wpmButton_30"
             android:textColor="@color/design_default_color_primary_dark"
             android:textSize="16sp" />
     </RadioGroup>
@@ -108,8 +108,8 @@
 
     <TextView
         android:id="@+id/output"
-        android:layout_width="330dp"
-        android:layout_height="104dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="50dp"
         android:layout_marginTop="100dp"
         android:layout_marginEnd="50dp"
@@ -120,7 +120,7 @@
         android:longClickable="true"
         android:text=""
         android:textIsSelectable="true"
-        android:textSize="20dp"
+        android:textSize="15sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -134,8 +134,8 @@
         android:layout_marginTop="20dp"
         android:minWidth="0dp"
         android:minHeight="0dp"
-        android:text="点击切换\n到录音"
-        android:textSize="12dp"
+        android:text="@string/switch_to_record"
+        android:textSize="12sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -148,8 +148,8 @@
         android:layout_marginEnd="30dp"
         android:minWidth="0dp"
         android:minHeight="0dp"
-        android:text="长码编码\n(点击切换)"
-        android:textSize="12dp"
+        android:text="@string/switch_to_shortCode_button"
+        android:textSize="12sp"
         app:layout_constraintEnd_toStartOf="@+id/switch_to_socket"
         app:layout_constraintStart_toEndOf="@+id/switch_to_record"
         app:layout_constraintTop_toTopOf="parent" />
@@ -162,8 +162,8 @@
         android:layout_marginEnd="20dp"
         android:minWidth="0dp"
         android:minHeight="0dp"
-        android:text="点击切换\n到Socket通信"
-        android:textSize="12dp"
+        android:text="@string/switch_to_socket"
+        android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -172,31 +172,30 @@
         android:id="@+id/audio_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="128dp"
-        android:layout_marginTop="44dp"
-        android:layout_marginEnd="129dp"
-        android:layout_marginBottom="55dp"
-        android:text="3.编码并播放音频"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="@string/audio_button"
+        android:layout_marginTop="5dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pcmRadioGroup1" />
+        app:layout_constraintTop_toBottomOf="@+id/guideline3"
+        />
 
     <EditText
         android:id="@+id/input_text"
-        android:layout_width="323dp"
-        android:layout_height="68dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="50dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="50dp"
         android:background="@drawable/translucent"
         android:ems="10"
         android:gravity="center"
-        android:hint="1.请输入英文字符"
+        android:hint="@string/input_text"
+        android:autofillHints="@string/input_text"
         android:inputType="textPersonName"
         android:minHeight="48dp"
         android:textCursorDrawable="@drawable/edittext_cursor"
-        android:textSize="20dp"
+        android:textSize="15sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/output"
@@ -210,10 +209,26 @@
         android:layout_marginStart="100dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="100dp"
-        android:text="2.字符转摩尔斯码"
+        android:text="@string/char_to_morse_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/input_text" />
 
+    <Button
+        android:id="@+id/half_duplex_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/half_duplex_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/audio_button" />
 
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.75" />
 </androidx.constraintlayout.widget.ConstraintLayout>

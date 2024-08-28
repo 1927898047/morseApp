@@ -2,19 +2,30 @@ package com.zyj.morseapp.pages;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Looper;
+import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.zyj.morseapp.R;
-import com.zyj.morseapp.Utils.ArraysUtils;
-import com.zyj.morseapp.Utils.FileUtils;
-import com.zyj.morseapp.Utils.PostUtils;
+import com.zyj.morseapp.audio.MorseAudio;
+import com.zyj.morseapp.utils.ArraysUtils;
+import com.zyj.morseapp.utils.FileUtils;
+import com.zyj.morseapp.utils.PostUtils;
 import com.zyj.morseapp.application.MyApplication;
+import com.zyj.morseapp.utils.ptt.CWEncoder;
+import com.zyj.morseapp.utils.ptt.MyAudio;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,113 +34,301 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Sockets extends AppCompatActivity {
-    private TextView output_text =null;
-    private Button send_toServer=null;
-    private Context context=null;
-//    public static String ip="http://morse.jinmensuyin.com:80/upload_json";
-//    public static String port="80";
-    public static String port="5000";
-    public static String ip="127.0.0.1";
+    private static TextView output_text =null;
+    private static Button send_shortWave=null;
+    private static Button send_longWave=null;
 
+    private Context context=null;
+    public static String port = "80";
+    public static String ip = "127.0.0.1";
+    public static String deviceId="1";
+    public static Integer expiredTime = 40 * 1000;
+    public static boolean isPlayAudio = true;
+    public static boolean isSelfAdaptionWpm = false;
 
     private Button bt_settings;
     private EditText et_port;
     private EditText et_ip;
+    private EditText et_deviceId;
+    private EditText et_expiredTime;
+    private CheckBox isPlayAudioButton;
+    private CheckBox isSelfAdaptionWpmButton;
+
     private static String ipTxt;
     private static String portTxt;
+    private static String deviceIdTxt;
+    private static String expiredTimeTxt;
+    private static String isPlayAudioTxt;
+    private static String isSelfAdaptionWpmTxt;
+
+    public static int longWpm = 25;
+    public static int shortWpm = 40;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //控件初始化
         setContentView(R.layout.activity_socket);
+        send_shortWave = findViewById(R.id.send_shortWave);
+        send_longWave = findViewById(R.id.send_longWave);
 
-        send_toServer = findViewById(R.id.send_wav_toServer_button);
         bt_settings=findViewById(R.id.bt_settings);
         et_port=findViewById(R.id.et_port);
         et_ip=findViewById(R.id.et_ip);
+        et_deviceId = findViewById(R.id.et_deviceId);
+        et_expiredTime = findViewById(R.id.et_expiredTime);
+        output_text=findViewById(R.id.serverReturn);
+        isPlayAudioButton = findViewById(R.id.PlayAudioButton);
+        isSelfAdaptionWpmButton = findViewById(R.id.SelfAdaptionButton);
 
+        send_shortWave.setOnClickListener(new MyOnClick());
+        send_longWave.setOnClickListener(new MyOnClick());
 
-        send_toServer.setOnClickListener(new MyOnClick());
         et_port.setOnClickListener(new MyOnClick());
         et_ip.setOnClickListener(new MyOnClick());
+        et_deviceId.setOnClickListener(new MyOnClick());
+        et_expiredTime.setOnClickListener(new MyOnClick());
+
         bt_settings.setOnClickListener(new MyOnClick());
+        context = MyApplication.getContext();
 
-        context= MyApplication.getContext();
-
-        ipTxt=context.getExternalFilesDir("").getAbsolutePath()+"/ip.txt";
-        portTxt=context.getExternalFilesDir("").getAbsolutePath()+"/port.txt";
-
-
+        ipTxt = context.getExternalFilesDir("").getAbsolutePath()+"/ip.txt";
+        portTxt = context.getExternalFilesDir("").getAbsolutePath()+"/port.txt";
+        deviceIdTxt = context.getExternalFilesDir("").getAbsolutePath()+"/deviceId.txt";
+        expiredTimeTxt = context.getExternalFilesDir("").getAbsolutePath()+"/expiredTime.txt";
+        isPlayAudioTxt = context.getExternalFilesDir("").getAbsolutePath()+"/isPlayAudio.txt";
+        isSelfAdaptionWpmTxt = context.getExternalFilesDir("").getAbsolutePath()+"/isSelfAdaptionWpm.txt";
+        output_text.setMovementMethod(ScrollingMovementMethod.getInstance());
         //持久化ip设置
         try {
             if(!FileUtils.fileExist(ipTxt)){
-                FileUtils.writeTxt(ipTxt,ip);
+                FileUtils.writeTxt(ipTxt, ip);
             }
             if(!FileUtils.fileExist(portTxt)){
-                FileUtils.writeTxt(portTxt,port);
+                FileUtils.writeTxt(portTxt, port);
             }
-            ip=FileUtils.readTxt(ipTxt);
-            port=FileUtils.readTxt(portTxt);
-            System.out.println(ip);
-            System.out.println(port);
+            if(!FileUtils.fileExist(deviceIdTxt)){
+                FileUtils.writeTxt(deviceIdTxt, deviceId);
+            }
+            if(!FileUtils.fileExist(expiredTimeTxt)){
+                FileUtils.writeTxt(expiredTimeTxt, String.valueOf(expiredTime));
+            }
+            if(!FileUtils.fileExist(isSelfAdaptionWpmTxt)){
+                FileUtils.writeTxt(isSelfAdaptionWpmTxt, isSelfAdaptionWpm ? "1" : "0");
+            }
+            if(!FileUtils.fileExist(isPlayAudioTxt)){
+                FileUtils.writeTxt(isPlayAudioTxt, isPlayAudio ? "1" : "0");
+            }
+            ip = FileUtils.readTxt(ipTxt);
+            port = FileUtils.readTxt(portTxt);
+            deviceId = FileUtils.readTxt(deviceIdTxt);
+            expiredTime = Integer.valueOf(FileUtils.readTxt(expiredTimeTxt));
+            isPlayAudio = FileUtils.readTxt(isPlayAudioTxt).equals("1");
+            isSelfAdaptionWpm = FileUtils.readTxt(isSelfAdaptionWpmTxt).equals("1");
+
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         et_ip.setText(ip);
         et_port.setText(port);
+        et_deviceId.setText(deviceId);
+        et_expiredTime.setText(expiredTime.toString());
+        isPlayAudioButton.setChecked(isPlayAudio);
+        isSelfAdaptionWpmButton.setChecked(isSelfAdaptionWpm);
     }
+
+    public static void show(String str) {
+        output_text.post(new Runnable() {
+            @Override
+            public void run() {
+                output_text.setText(str);
+            }
+        });
+    }
+
 
     class MyOnClick implements View.OnClickListener{
         @Override
         public void onClick(View view) {
-            output_text =findViewById(R.id.serverReturn);
-            String path= context.getExternalFilesDir("").getAbsolutePath()+"/morse_shortCode.wav";
-            System.out.println(path);
+
+            String shortWavePath= context.getExternalFilesDir("").getAbsolutePath()+"/morse_shortCode.pcm";
+            String longWavePath= context.getExternalFilesDir("").getAbsolutePath()+"/morse_longCode.pcm";
             ExecutorService exec = Executors.newSingleThreadScheduledExecutor();
             switch (view.getId()){
-                //网络通信：发送wav文件，显示返回内容
-                case R.id.send_wav_toServer_button:
-                    if(!new File(path).exists()){
-                        Toast.makeText(Sockets.this,"音频文件不存在，发送失败！",Toast.LENGTH_LONG).show();
+                //网络通信：发送PCM文件，显示返回内容
+                case R.id.send_shortWave:
+                    show("");
+                    if(!new File(shortWavePath).exists()){
+                        Toast.makeText(Sockets.this,"短码音频文件不存在，发送失败！",Toast.LENGTH_LONG).show();
                         break;
                     }
-                    send_toServer.setText("正在发送文件......");
+
                     Toast.makeText(Sockets.this,"正在发送文件......",Toast.LENGTH_LONG).show();
-                    byte[] bytes1 = FileUtils.fileToByteArr(path);
+                    byte[] bytes1 = FileUtils.fileToByteArr(shortWavePath);
                     short[] shorts1 = ArraysUtils.byteToShortInBigEnd(bytes1);
-                    String str="";
-                    int i=0;
-                    while(i*32000<shorts1.length) {
-                        short[] shorts2 = Arrays.copyOfRange(shorts1, i * 32000, (i + 1) * 32000);
-                        str = "{\"data\":\"" + Arrays.toString(shorts2) + "\"}";
-                        exec.submit(new PostUtils(str));
+                    String str1="";
+                    int i1=0;
+                    while(i1*32000<shorts1.length) {
+                        if((i1+1)*32000>shorts1.length){
+                            short[] end = Arrays.copyOfRange(shorts1, i1 * 32000, shorts1.length);
+                            str1 = "{\"data\":\"" + Arrays.toString(end) + "\"}";
+//                            System.out.println(str1.substring(str1.length()-100));
+//                            System.out.println(end.length);
+//                            short[] test=Arrays.copyOfRange(shorts1, i1 * 32000, (i1 + 1) * 32000);
+//                            String str3="{\"data\":\"" + Arrays.toString(test) + "\"}";
+//                            System.out.println(test.length);
+//                            System.out.println(str3.substring(str3.length()-100));
+                        }
+                        else{
+                            short[] shorts2 = Arrays.copyOfRange(shorts1, i1 * 32000, (i1 + 1) * 32000);
+                            str1 = "{\"data\":\"" + Arrays.toString(shorts2) + "\"}";
+                        }
+                        exec.submit(new PostUtils(str1));
                         exec.submit(new Thread(){
                             @Override
                             public void run() {
-                                output_text.setText(PostUtils.msg);
+                                if(PostUtils.code!=200) {
+                                    show("网络通信失败！");
+                                    System.out.println("网络通信失败");
+                                }
+                                else if(PostUtils.code==200){
+                                    JSONArray content;
+                                    try {
+                                        JSONObject object=new JSONObject(PostUtils.msg);
+                                        content=object.getJSONArray("content");
+                                        if(content.length()!=0){
+                                            show(PostUtils.msg);
+                                        }
+                                        else if(content.length()==0 && output_text.getText().toString().equals("")){
+                                            show("收到空报文");
+                                        }
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                                PostUtils.code=0;
                             }
                         });
-                        i++;
+                        i1++;
                     }
                     exec.submit(new Thread(){
                         @Override
                         public void run() {
-                            send_toServer.setText("点击发送wav文件");
+                            Looper.prepare();
+                            Toast.makeText(Sockets.this,"发送结束！",Toast.LENGTH_LONG).show();
+                            Looper.loop();
                         }
                     });
                     exec.shutdown();
+
+                    // ptt脉冲输出
+                    System.out.println("ShortCoder.shortMorseContentForPtt:" + ShortCoder.shortMorseContentForPtt);
+                    System.out.println("shortWpm:" + shortWpm);
+                    try {
+                        String shortMorseStr = ShortCoder.shortMorseContentForPtt;
+                        MorseAudio morseAudioObj1 = new MorseAudio();
+                        short[] shortMorseStrArr = morseAudioObj1.codeConvert2Sound(shortMorseStr, shortWpm);
+                        MyAudio.getInstance().playMorse(shortMorseStrArr, shortMorseStrArr.length, shortMorseStr, shortWpm);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+
+                    break;
+                case R.id.send_longWave:
+                    output_text.setText("");
+                    if(!new File(longWavePath).exists()){
+                        Toast.makeText(Sockets.this,"长码音频文件不存在，发送失败！",Toast.LENGTH_LONG).show();
+                        break;
+                    }
+                    Toast.makeText(Sockets.this,"正在发送文件......",Toast.LENGTH_LONG).show();
+                    byte[] bytes2 = FileUtils.fileToByteArr(longWavePath);
+                    short[] shorts3 = ArraysUtils.byteToShortInBigEnd(bytes2);
+                    String str2="";
+                    int i2=0;
+                    while(i2*32000<shorts3.length) {
+                        if((i2+1)*32000>shorts3.length){
+                            short[] end = Arrays.copyOfRange(shorts3, i2 * 32000, shorts3.length);
+                            str2 = "{\"data\":\"" + Arrays.toString(end) + "\"}";
+                            System.out.println(str2);
+//                            System.out.println(end.length);
+                        }
+                        else{
+                            short[] shorts4 = Arrays.copyOfRange(shorts3, i2 * 32000, (i2 + 1) * 32000);
+                            str2 = "{\"data\":\"" + Arrays.toString(shorts4) + "\"}";
+                        }
+                        exec.submit(new PostUtils(str2));
+                        exec.submit(new Thread(){
+                            @Override
+                            public void run() {
+                                if(PostUtils.code!=200) {
+                                    show("网络通信失败！");
+                                }
+                                else if(PostUtils.code==200){
+                                    String talkContent;
+                                    try {
+                                        JSONObject object=new JSONObject(PostUtils.msg);
+                                        talkContent=object.getString("talkContent");
+                                        if(!talkContent.equals("")){
+                                            show(PostUtils.msg);
+                                        }
+                                        else if(talkContent.equals("") && (output_text.getText().toString().equals(""))){
+                                            show("收到空报文");
+                                        }
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                                PostUtils.code=0;
+                            }
+                        });
+                        i2++;
+                    }
+                    exec.submit(new Thread(){
+                        @Override
+                        public void run() {
+                            Looper.prepare();
+                            Toast.makeText(Sockets.this,"发送结束！",Toast.LENGTH_LONG).show();
+                            Looper.loop();
+                        }
+                    });
+                    exec.shutdown();
+
+                    // ptt脉冲输出
+                    System.out.println("LongCoder.longMorseContentForPtt:" + LongCoder.longMorseContentForPtt);
+                    System.out.println("longWpm:" + longWpm);
+                    try {
+                        String longMorseStr = LongCoder.longMorseContentForPtt;
+                        MorseAudio morseAudioObj2 = new MorseAudio();
+                        short[] longMorseStrArr = morseAudioObj2.codeConvert2Sound(longMorseStr, longWpm);
+                        MyAudio.getInstance().playMorse(longMorseStrArr, longMorseStrArr.length, longMorseStr, longWpm);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+
                     break;
                 case R.id.bt_settings:
-                    ip=et_ip.getText().toString();
-                    port=et_port.getText().toString();
+                    ip = et_ip.getText().toString();
+                    port = et_port.getText().toString();
+                    deviceId = et_deviceId.getText().toString();
+                    expiredTime = Integer.valueOf(et_expiredTime.getText().toString());
+                    isPlayAudio = isPlayAudioButton.isChecked();
+                    isSelfAdaptionWpm = isSelfAdaptionWpmButton.isChecked();
+
                     et_ip.setText(ip);
                     et_port.setText(port);
-
+                    et_deviceId.setText(deviceId);
+                    et_expiredTime.setText(expiredTime.toString());
                     try {
-                        FileUtils.writeTxt(ipTxt,ip);
-                        FileUtils.writeTxt(portTxt,port);
+                        FileUtils.writeTxt(ipTxt, ip);
+                        FileUtils.writeTxt(portTxt, port);
+                        FileUtils.writeTxt(deviceIdTxt, deviceId);
+                        FileUtils.writeTxt(expiredTimeTxt, String.valueOf(expiredTime));
+                        FileUtils.writeTxt(isSelfAdaptionWpmTxt, isSelfAdaptionWpm ? "1" : "0");
+                        FileUtils.writeTxt(isPlayAudioTxt, isPlayAudio ? "1" : "0");
+
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

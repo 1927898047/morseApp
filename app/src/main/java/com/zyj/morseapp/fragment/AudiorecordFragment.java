@@ -14,9 +14,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.zyj.morseapp.R;
-import com.zyj.morseapp.Utils.AudioRecordUtils;
+import com.zyj.morseapp.utils.AudioRecordUtils;
 import com.zyj.morseapp.application.MyApplication;
-import com.zyj.morseapp.pages.AudioRecords;
 
 public class AudiorecordFragment extends Fragment {
     //全局上下文context
