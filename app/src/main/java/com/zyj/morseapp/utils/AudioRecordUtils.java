@@ -153,7 +153,7 @@ public class AudioRecordUtils{
                 String str ="";
                 while (isRecording) {
                     // 从音频硬件读取音频数据，以便记录到字节数组中。
-                    audioRecord.read(data, 0, recordBufSize);
+                    int read = audioRecord.read(data, 0, recordBufSize);
                     //调整音量大小
                     amplifyPCMData(data, data.length, dataNew,16,(float) Math.pow(10, (double)5 / 20));
                     short[] shortData = ArraysUtils.byteToShortInBigEnd(dataNew);
@@ -201,7 +201,14 @@ public class AudioRecordUtils{
                             PostUtils.code=0;
                         }
                     });
-
+                    // 如果读取音频数据没有出现错误，就将数据写入到文件
+                    if (AudioRecord.ERROR_INVALID_OPERATION != read) {
+                        try {
+                            os.write(data);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
 
                 exec.shutdown();
