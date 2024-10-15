@@ -1063,6 +1063,12 @@ public class HalfDuplex extends AppCompatActivity {
                         start_half_duplex.setText("正在进行半双工通信...");
                         // 开始定时读取缓冲区的任务
                         handler.post(readBufferTask);
+                        try {
+                            refreshIsPlayAudio();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
                     }
                     else {
                         isHalfDuplexWorking = 0;
@@ -1808,5 +1814,9 @@ public class HalfDuplex extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void refreshIsPlayAudio() throws IOException {
+        isPlayAudio = FileUtils.readTxt(context.getExternalFilesDir("").getAbsolutePath()+"/isPlayAudio.txt").equals("1");
     }
 }
