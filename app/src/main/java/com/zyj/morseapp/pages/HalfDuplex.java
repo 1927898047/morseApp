@@ -43,6 +43,7 @@ import com.zyj.morseapp.utils.FileUtils;
 import com.zyj.morseapp.utils.HalfDuplexMorseSender;
 import com.zyj.morseapp.utils.HalfDuplexUtils;
 import com.zyj.morseapp.utils.MorseSender;
+import com.zyj.morseapp.utils.PcmToWavUtils;
 import com.zyj.morseapp.utils.PostUtils;
 import com.zyj.morseapp.utils.StringUtils;
 import com.zyj.morseapp.utils.UploadLongUtils;
@@ -56,6 +57,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -68,8 +70,10 @@ import java.nio.ByteOrder;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
@@ -273,6 +277,15 @@ public class HalfDuplex extends AppCompatActivity {
         changeLongCodeGNumInput(deviceId);
         changelongCodeLevel(deviceId);
         changeLongCodeOther(deviceId);
+
+        // 创建文件
+        try {
+            if(!FileUtils.fileExist(isSaveWavPath)){
+                FileUtils.writeTxt(isSaveWavPath, "1");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void refreshLogView(String msg){
@@ -960,6 +973,16 @@ public class HalfDuplex extends AppCompatActivity {
      * 点击响应
      */
     class MyOnClick implements View.OnClickListener {
+
+        // 发送长码报文
+        Thread thread1 = null;
+        // 等待长码响应
+        Thread thread2 = null;
+        // 发送短码报文
+        Thread thread3 = null;
+        // 等待短码响应
+        Thread thread4 = null;
+
         @Override
         public void onClick(View view) {
             switch (view.getId()) {
@@ -1059,10 +1082,14 @@ public class HalfDuplex extends AppCompatActivity {
                         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
                             audioRecord = new AudioRecord(AUDIO_INPUT, AUDIO_SAMPLE_RATE, AUDIO_CHANNEL, AUDIO_ENCODING, recordBufSize);
                         }
-                        audioRecord.startRecording();
-                        start_half_duplex.setText("正在进行半双工通信...");
-                        // 开始定时读取缓冲区的任务
-                        handler.post(readBufferTask);
+
+                        startRecording();
+                        start_half_duplex.setText("停止半双工通信");
+
+//                        audioRecord.startRecording();
+//                        start_half_duplex.setText("停止半双工通信");
+//                        // 开始定时读取缓冲区的任务
+//                        handler.post(readBufferTask);
                         try {
                             refreshIsPlayAudio();
                         } catch (IOException e) {
@@ -1072,7 +1099,7 @@ public class HalfDuplex extends AppCompatActivity {
                     }
                     else {
                         isHalfDuplexWorking = 0;
-                        start_half_duplex.setText("开启半双工通信");
+                        start_half_duplex.setText("启动半双工通信");
                         stopRecording();
                         Toast.makeText(HalfDuplex.this,"半双工通信结束！",Toast.LENGTH_LONG).show();
                     }
@@ -1099,9 +1126,15 @@ public class HalfDuplex extends AppCompatActivity {
     private Handler handler = new Handler();
     private Handler receiveHandler = new Handler();
 
-    private static byte data[] = new byte[recordBufSize];;
-    private static byte dataNew[] = new byte[recordBufSize];;
+    private static byte data[] = new byte[recordBufSize];
+    private static byte dataNew[] = new byte[recordBufSize];
     private volatile boolean isRecording = true;
+
+    // 录音数据
+    List<byte[]> allRecordArrays = new ArrayList<>();
+    private PcmToWavUtils tool = new PcmToWavUtils(AUDIO_SAMPLE_RATE,AUDIO_CHANNEL,AUDIO_ENCODING);
+    private AudioRecordUtils audioRecordUtils = new AudioRecordUtils();
+    private String isSaveWavPath = context.getExternalFilesDir("").getAbsolutePath()+"/isSaveWav.txt";
 
     private String content = "";
     private boolean playAudio1 = false;
@@ -1122,6 +1155,15 @@ public class HalfDuplex extends AppCompatActivity {
                     return ;
                 }
                 audioRecord.read(data, 0, recordBufSize);
+
+                // 记录所有录音数据
+                byte[] copiedData = new byte[recordBufSize];
+                byte[] newCopiedData = new byte[recordBufSize];
+                System.arraycopy(data, 0, copiedData, 0, recordBufSize);
+                //调整音量大小
+                amplifyPCMData(copiedData, copiedData.length, newCopiedData,16, (float) Math.pow(10, (double)5 / 20));
+                allRecordArrays.add(newCopiedData);
+
                 //调整音量大小
                 amplifyPCMData(data, data.length, dataNew,16, (float) Math.pow(10, (double)5 / 20));
                 short[] shortData = ArraysUtils.byteToShortInBigEnd(dataNew);
@@ -1388,6 +1430,32 @@ public class HalfDuplex extends AppCompatActivity {
         // 取消定时任务
         handler.removeCallbacks(readBufferTask);
 
+        boolean isSaveWav = false;
+        try {
+            isSaveWav = FileUtils.readTxt(context.getExternalFilesDir("").getAbsolutePath()+"/isSaveWav.txt").equals("1");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("isSaveWav:" + isSaveWav);
+
+        if (isSaveWav){
+            // 将录音数据写入到文件中
+            long currentTimeMillis = System.currentTimeMillis();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH_mm_ss");
+            Date date = new Date(currentTimeMillis);
+            String formattedDate = sdf.format(date);
+
+            String pcmFileName = context.getExternalFilesDir("").getAbsolutePath()+"/comm_" + formattedDate + ".pcm";
+            String wavFileName = context.getExternalFilesDir("").getAbsolutePath()+"/comm_" + formattedDate + ".wav";
+
+            System.out.println("保存录音文件");
+            System.out.println("allRecordArrays.size()= " + allRecordArrays.size());
+
+            combineAudioDataAndWrite(allRecordArrays, pcmFileName);
+            //利用自定义工具类将pcm格式的文件转换为wav格式文件才能进行播放
+            tool.pcmToWav(pcmFileName,wavFileName);
+        }
     }
 
     private void onAudioPlaybackComplete() {
@@ -1399,13 +1467,61 @@ public class HalfDuplex extends AppCompatActivity {
         System.out.println("重新开启录音！");
         // 重新初始化AudioRecord
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
-            audioRecord = new AudioRecord(AUDIO_INPUT, AUDIO_SAMPLE_RATE, AUDIO_CHANNEL, AUDIO_ENCODING, recordBufSize);
+            audioRecord = new AudioRecord(AUDIO_INPUT, AUDIO_SAMPLE_RATE, AUDIO_CHANNEL, AUDIO_ENCODING, recordBufSize * 2);
         }
         audioRecord.startRecording();
         // 重新启动定时读取缓冲区的任务
         isRecording = true;
-        handler.postDelayed(readBufferTask, 4000);
+
+        // 录音数据清空
+        System.out.println("清空录音数据");
+        allRecordArrays.clear();
+        Arrays.fill(data, (byte) 0);
+        System.out.println("allRecordArrays.size()= " + allRecordArrays.size());
+
+        // 开启录音线程
+        handler.post(readBufferTask);
     }
+
+    /**
+     * 将录音数据写入到文件中
+     * @param dataArrays
+     * @return
+     */
+    private void combineAudioDataAndWrite(List<byte[]> dataArrays, String path) {
+        FileOutputStream os = null;
+        File file=new File(path);
+        try {
+            //如果文件不存在，就创建文件
+            if(file.exists()){
+                file.delete();
+            }
+            //创建MorseCode.wav文件
+            file.createNewFile();
+            os = new FileOutputStream(file);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        for (byte[] data : dataArrays) {
+            try {
+                os.write(data);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        try {
+            //关闭文件
+            os.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     //调整pcm音量
     public int amplifyPCMData(byte[] pData, int nLen, byte[] data2, int nBitsPerSample, float multiple)
     {
