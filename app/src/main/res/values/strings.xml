@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">morseApp-v6.8</string>
+    <string name="app_name">morseApp-v6.9</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
@@ -53,7 +53,8 @@
     <string name="output14">月日</string>
     <string name="output15">时分</string>
     <string name="output16">附注</string>
-    <string name="et_expiredTime">单位：ms</string>
+    <string name="et_expiredTime">单位：s</string>
+    <string name="preamble_num">范围：1~10</string>
     <string name="isPlayAudioButton">是否播放音频</string>
     <string name="isSelfAdaption">开启自动降低码速</string>
 </resources>

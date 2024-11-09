@@ -133,6 +133,9 @@ public class HalfDuplex extends AppCompatActivity {
 
     private int maxAttempts = 40; // 长码轮询的最大次数
 
+    // 前导码组数
+    private int preambleNum = 1;
+
     private final long timeout = 30; // 超时时间：3000ms
 
     // 存储长码和短码的CRC内容
@@ -206,7 +209,7 @@ public class HalfDuplex extends AppCompatActivity {
         output_text.setSelected(true);
 
         // 获取超时时间
-        maxAttempts = Sockets.expiredTime / 1000;
+        maxAttempts = Sockets.expiredTime;
 
         // 避免父布局拦截滑动事件
         output_text.setOnTouchListener(new View.OnTouchListener() {
@@ -988,6 +991,8 @@ public class HalfDuplex extends AppCompatActivity {
             switch (view.getId()) {
                 // 发送
                 case R.id.send_button:
+                    preambleNum = Sockets.preambleNum;
+
                     if (audioRecord == null) {
                         // 重新初始化AudioRecord
                         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
@@ -1050,11 +1055,15 @@ public class HalfDuplex extends AppCompatActivity {
                             + longCrc + " "
                             + "K K K";
                     String shortCode = "= = = " + shortContent + " " + "+ + +";
+
+                    shortCode = addPreamble(shortCode, preambleNum);
+                    longCode = addPreamble(longCode, preambleNum);
                     System.out.println("shortCode:" + shortCode);
                     System.out.println("longCode:" + longCode);
+
                     String shortMorse = morseShortCoder.encode(shortCode);
                     String longMorse = morseLongCoder.encode(longCode);
-                    maxAttempts = Sockets.expiredTime / 1000;
+                    maxAttempts = Sockets.expiredTime;
                     try {
                         isPlayAudio = FileUtils.readTxt(context.getExternalFilesDir("").getAbsolutePath()+"/isPlayAudio.txt").equals("1");
                     } catch (IOException e) {
@@ -1103,7 +1112,7 @@ public class HalfDuplex extends AppCompatActivity {
                         stopRecording();
                         Toast.makeText(HalfDuplex.this,"半双工通信结束！",Toast.LENGTH_LONG).show();
                     }
-                    maxAttempts = Sockets.expiredTime / 1000;
+                    maxAttempts = Sockets.expiredTime;
                     break;
                 default:
                     break;
@@ -1325,6 +1334,7 @@ public class HalfDuplex extends AppCompatActivity {
                                         + "9801 "
                                         + "Ready "
                                         + "K K K";
+                                recv_content2 = addPreamble(recv_content2, preambleNum);
                                 System.out.println("recv_content:" + recv_content2);
                                 // 短码译码
                                 morseStr2 = morseLongCoder.encode(recv_content2);
@@ -1385,6 +1395,7 @@ public class HalfDuplex extends AppCompatActivity {
                                     recv_content1 = "R R R " + lastSrcDeviceId + " "
                                             + "DE " + myDeviceId + " "
                                             + "Ready K K K";
+                                    recv_content1 = addPreamble(recv_content1, preambleNum);
                                     // 长码译码
                                     morseStr1 = morseLongCoder.encode(recv_content1);
                                     // 接收到长码
@@ -1934,5 +1945,19 @@ public class HalfDuplex extends AppCompatActivity {
 
     private void refreshIsPlayAudio() throws IOException {
         isPlayAudio = FileUtils.readTxt(context.getExternalFilesDir("").getAbsolutePath()+"/isPlayAudio.txt").equals("1");
+    }
+
+    /**
+     * 增加前导码
+     * @param str
+     * @return
+     */
+    private String addPreamble(String str, int n){
+        StringBuilder sb = new StringBuilder();
+        for(int i = 0; i < n; i++){
+            sb.append("3333 ");
+        }
+        sb.append(str);
+        return sb.toString();
     }
 }

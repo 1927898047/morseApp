@@ -42,9 +42,11 @@ public class Sockets extends AppCompatActivity {
     public static String port = "80";
     public static String ip = "127.0.0.1";
     public static String deviceId="1";
-    public static Integer expiredTime = 40 * 1000;
+    public static Integer expiredTime = 40;
     public static boolean isPlayAudio = true;
     public static boolean isSelfAdaptionWpm = false;
+    public static Integer preambleNum = 1;
+
 
     private Button bt_settings;
     private EditText et_port;
@@ -53,6 +55,7 @@ public class Sockets extends AppCompatActivity {
     private EditText et_expiredTime;
     private CheckBox isPlayAudioButton;
     private CheckBox isSelfAdaptionWpmButton;
+    private EditText et_preamble_num;
 
     private static String ipTxt;
     private static String portTxt;
@@ -60,6 +63,8 @@ public class Sockets extends AppCompatActivity {
     private static String expiredTimeTxt;
     private static String isPlayAudioTxt;
     private static String isSelfAdaptionWpmTxt;
+    private static String preambleNumTxt;
+
 
     public static int longWpm = 25;
     public static int shortWpm = 40;
@@ -80,6 +85,7 @@ public class Sockets extends AppCompatActivity {
         output_text=findViewById(R.id.serverReturn);
         isPlayAudioButton = findViewById(R.id.PlayAudioButton);
         isSelfAdaptionWpmButton = findViewById(R.id.SelfAdaptionButton);
+        et_preamble_num = findViewById(R.id.et_preamble_num);
 
         send_shortWave.setOnClickListener(new MyOnClick());
         send_longWave.setOnClickListener(new MyOnClick());
@@ -88,6 +94,7 @@ public class Sockets extends AppCompatActivity {
         et_ip.setOnClickListener(new MyOnClick());
         et_deviceId.setOnClickListener(new MyOnClick());
         et_expiredTime.setOnClickListener(new MyOnClick());
+        et_preamble_num.setOnClickListener(new MyOnClick());
 
         bt_settings.setOnClickListener(new MyOnClick());
         context = MyApplication.getContext();
@@ -98,6 +105,7 @@ public class Sockets extends AppCompatActivity {
         expiredTimeTxt = context.getExternalFilesDir("").getAbsolutePath()+"/expiredTime.txt";
         isPlayAudioTxt = context.getExternalFilesDir("").getAbsolutePath()+"/isPlayAudio.txt";
         isSelfAdaptionWpmTxt = context.getExternalFilesDir("").getAbsolutePath()+"/isSelfAdaptionWpm.txt";
+        preambleNumTxt = context.getExternalFilesDir("").getAbsolutePath()+"/preambleNum.txt";
         output_text.setMovementMethod(ScrollingMovementMethod.getInstance());
         //持久化ip设置
         try {
@@ -119,13 +127,16 @@ public class Sockets extends AppCompatActivity {
             if(!FileUtils.fileExist(isPlayAudioTxt)){
                 FileUtils.writeTxt(isPlayAudioTxt, isPlayAudio ? "1" : "0");
             }
+            if(!FileUtils.fileExist(preambleNumTxt)){
+                FileUtils.writeTxt(preambleNumTxt, String.valueOf(preambleNum));
+            }
             ip = FileUtils.readTxt(ipTxt);
             port = FileUtils.readTxt(portTxt);
             deviceId = FileUtils.readTxt(deviceIdTxt);
             expiredTime = Integer.valueOf(FileUtils.readTxt(expiredTimeTxt));
             isPlayAudio = FileUtils.readTxt(isPlayAudioTxt).equals("1");
             isSelfAdaptionWpm = FileUtils.readTxt(isSelfAdaptionWpmTxt).equals("1");
-
+            preambleNum = Integer.valueOf(FileUtils.readTxt(preambleNumTxt));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -136,6 +147,7 @@ public class Sockets extends AppCompatActivity {
         et_expiredTime.setText(expiredTime.toString());
         isPlayAudioButton.setChecked(isPlayAudio);
         isSelfAdaptionWpmButton.setChecked(isSelfAdaptionWpm);
+        et_preamble_num.setText(preambleNum.toString());
     }
 
     public static void show(String str) {
@@ -316,11 +328,13 @@ public class Sockets extends AppCompatActivity {
                     expiredTime = Integer.valueOf(et_expiredTime.getText().toString());
                     isPlayAudio = isPlayAudioButton.isChecked();
                     isSelfAdaptionWpm = isSelfAdaptionWpmButton.isChecked();
+                    preambleNum = Integer.valueOf(et_preamble_num.getText().toString());
 
                     et_ip.setText(ip);
                     et_port.setText(port);
                     et_deviceId.setText(deviceId);
                     et_expiredTime.setText(expiredTime.toString());
+                    et_preamble_num.setText(preambleNum.toString());
                     try {
                         FileUtils.writeTxt(ipTxt, ip);
                         FileUtils.writeTxt(portTxt, port);
@@ -328,6 +342,7 @@ public class Sockets extends AppCompatActivity {
                         FileUtils.writeTxt(expiredTimeTxt, String.valueOf(expiredTime));
                         FileUtils.writeTxt(isSelfAdaptionWpmTxt, isSelfAdaptionWpm ? "1" : "0");
                         FileUtils.writeTxt(isPlayAudioTxt, isPlayAudio ? "1" : "0");
+                        FileUtils.writeTxt(preambleNumTxt, String.valueOf(preambleNum));
 
                     } catch (IOException e) {
                         e.printStackTrace();

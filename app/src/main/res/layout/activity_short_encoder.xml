@@ -27,7 +27,7 @@
             android:buttonTint="#F4606C"
             android:text="@string/wpmButton_35"
             android:textColor="@color/design_default_color_primary_dark"
-            android:textSize="16sp" />
+            android:textSize="15sp" />
 
         <RadioButton
             android:id="@+id/wpmButton_40"
@@ -37,7 +37,7 @@
             android:text="@string/wpmButton_40"
             android:textColor="@color/design_default_color_primary_dark"
 
-            android:textSize="16sp" />
+            android:textSize="15sp" />
 
         <RadioButton
             android:id="@+id/wpmButton_45"
@@ -46,7 +46,7 @@
             android:buttonTint="#F4606C"
             android:text="@string/wpmButton_45"
             android:textColor="@color/design_default_color_primary_dark"
-            android:textSize="16sp" />
+            android:textSize="15sp" />
 
         <RadioButton
             android:id="@+id/wpmButton_50"
@@ -55,7 +55,7 @@
             android:buttonTint="#F4606C"
             android:text="@string/wpmButton_50"
             android:textColor="@color/design_default_color_primary_dark"
-            android:textSize="16sp" />
+            android:textSize="15sp" />
     </RadioGroup>
 
     <RadioGroup
@@ -76,7 +76,7 @@
             android:buttonTint="#F4606C"
             android:text="@string/wpmButton_15"
             android:textColor="@color/design_default_color_primary_dark"
-            android:textSize="16sp" />
+            android:textSize="15sp" />
 
         <RadioButton
             android:id="@+id/wpmButton_20"
@@ -86,7 +86,7 @@
             android:text="@string/wpmButton_20"
             android:textColor="@color/design_default_color_primary_dark"
 
-            android:textSize="16sp" />
+            android:textSize="15sp" />
 
         <RadioButton
             android:id="@+id/wpmButton_25"
@@ -95,7 +95,7 @@
             android:buttonTint="#F4606C"
             android:text="@string/wpmButton_25"
             android:textColor="@color/design_default_color_primary_dark"
-            android:textSize="16sp" />
+            android:textSize="15sp" />
 
         <RadioButton
             android:id="@+id/wpmButton_30"
@@ -104,7 +104,7 @@
             android:buttonTint="#F4606C"
             android:text="@string/wpmButton_30"
             android:textColor="@color/design_default_color_primary_dark"
-            android:textSize="16sp" />
+            android:textSize="15sp" />
     </RadioGroup>
 
 
