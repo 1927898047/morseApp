@@ -279,7 +279,7 @@ public class MyAudio
 				// 激活码码速
 				int activeWpm = 12;
 				int imSleep = 1200/activeWpm;
-				String activeCode = "-/-/";
+				String activeCode = "-///";
 				for (int i = 0; i < activeCode.codePointCount(0, activeCode.length()); i++)
 				{
 					String strTemp = activeCode.substring(i,i+1);
