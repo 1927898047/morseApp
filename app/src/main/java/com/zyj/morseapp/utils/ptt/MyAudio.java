@@ -276,7 +276,47 @@ public class MyAudio
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				int imSleep = 1200/iwpm;
+				// 激活码码速
+				int activeWpm = 12;
+				int imSleep = 1200/activeWpm;
+				String activeCode = "-/-/";
+				for (int i = 0; i < activeCode.codePointCount(0, activeCode.length()); i++)
+				{
+					String strTemp = activeCode.substring(i,i+1);
+					System.out.println("strTemp="+strTemp);
+					try {
+						if (strTemp.compareTo(".") == 0)
+						{
+							setPower(true,PTT_NODE_PATH);
+							Thread.sleep(imSleep);
+							setPower(false,PTT_NODE_PATH);
+							Thread.sleep(imSleep);
+							System.out.println("ptt Mode is playing:" + strTemp);
+
+						}
+						else if(strTemp.compareTo("-") == 0)
+						{
+							setPower(true,PTT_NODE_PATH);
+							Thread.sleep(3*imSleep);
+							setPower(false,PTT_NODE_PATH);
+							Thread.sleep(imSleep);
+							System.out.println("ptt Mode is playing:" + strTemp);
+
+						}
+						else if(strTemp.compareTo("/") == 0)
+						{
+							setPower(false,PTT_NODE_PATH);
+							Thread.sleep(2*imSleep);
+							System.out.println("ptt Mode is playing:" + strTemp);
+
+						}
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+
+				// 正式报文
+				imSleep = 1200/iwpm;
 				for (int i = 0; i < strMorse.codePointCount(0, strMorse.length()); i++)
 				{
 					String strTemp = strMorse.substring(i,i+1);
