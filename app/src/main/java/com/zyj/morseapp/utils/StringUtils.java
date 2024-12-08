@@ -55,16 +55,6 @@ public class StringUtils {
 
     // TODO 设备号获取
     public static String getId1FromRecLongCodeMessage1(String inputString) {
-//        String[] parts = inputString.split("R R R");
-//        if (parts.length > 1) {
-//            String[] subParts = parts[1].split("DE");
-//            if (subParts.length > 0) {
-//                String value = subParts[0];
-//                value = value.trim();
-//                return value;
-//            }
-//        }
-//        return "-1";
 
 //         获取最后一个"R "的索引
         int lastIndexR = inputString.lastIndexOf("R ");

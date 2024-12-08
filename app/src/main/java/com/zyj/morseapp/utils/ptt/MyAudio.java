@@ -268,7 +268,7 @@ public class MyAudio
 		//mAudioPlayer.stop();
 	}
 
-	public void playMorse(short []data, int iLength, String morse, final int wpm)
+	public void playMorse(String morse, final int wpm)
 	{
 		final String strMorse = morse;
 		final int iwpm = wpm;

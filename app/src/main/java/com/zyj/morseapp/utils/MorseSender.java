@@ -2,12 +2,9 @@ package com.zyj.morseapp.utils;
 
 import android.content.Context;
 import android.media.MediaPlayer;
-import android.widget.Toast;
 
 import com.zyj.morseapp.application.MyApplication;
 import com.zyj.morseapp.audio.MorseAudio;
-import com.zyj.morseapp.morsecoder.MorseLongCoder;
-import com.zyj.morseapp.morsecoder.MorseShortCoder;
 import com.zyj.morseapp.pages.HalfDuplex;
 
 import java.io.ByteArrayOutputStream;
