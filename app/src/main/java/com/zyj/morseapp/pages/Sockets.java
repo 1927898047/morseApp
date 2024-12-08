@@ -241,7 +241,7 @@ public class Sockets extends AppCompatActivity {
                         String shortMorseStr = ShortCoder.shortMorseContentForPtt;
                         MorseAudio morseAudioObj1 = new MorseAudio();
                         short[] shortMorseStrArr = morseAudioObj1.codeConvert2Sound(shortMorseStr, shortWpm);
-                        MyAudio.getInstance().playMorse(shortMorseStrArr, shortMorseStrArr.length, shortMorseStr, shortWpm);
+                        MyAudio.getInstance().playMorse(shortMorseStr, shortWpm);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -314,7 +314,7 @@ public class Sockets extends AppCompatActivity {
                         String longMorseStr = LongCoder.longMorseContentForPtt;
                         MorseAudio morseAudioObj2 = new MorseAudio();
                         short[] longMorseStrArr = morseAudioObj2.codeConvert2Sound(longMorseStr, longWpm);
-                        MyAudio.getInstance().playMorse(longMorseStrArr, longMorseStrArr.length, longMorseStr, longWpm);
+                        MyAudio.getInstance().playMorse(longMorseStr, longWpm);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

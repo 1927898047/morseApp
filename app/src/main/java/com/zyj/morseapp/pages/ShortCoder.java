@@ -18,7 +18,6 @@ import com.zyj.morseapp.application.MyApplication;
 import com.zyj.morseapp.audio.MorseAudio;
 import com.zyj.morseapp.morsecoder.MorseShortCoder;
 import com.zyj.morseapp.permission.Permission;
-import com.zyj.morseapp.utils.ptt.CWEncoder;
 import com.zyj.morseapp.utils.ptt.MyAudio;
 
 import java.io.ByteArrayOutputStream;
@@ -276,7 +275,7 @@ public class ShortCoder extends AppCompatActivity {
                             public void run() {
                                 MorseAudio morseAudioObj1 = new MorseAudio();
                                 short[] shortMorseStrArr = morseAudioObj1.codeConvert2Sound(str_morse, wpm);
-                                MyAudio.getInstance().playMorse(shortMorseStrArr, shortMorseStrArr.length, str_morse, wpm);
+                                MyAudio.getInstance().playMorse(str_morse, wpm);
                             }
                         }.start();
                     } catch (IOException e) {

@@ -17,7 +17,6 @@ import com.zyj.morseapp.application.MyApplication;
 import com.zyj.morseapp.audio.MorseAudio;
 import com.zyj.morseapp.morsecoder.MorseLongCoder;
 import com.zyj.morseapp.utils.FileUtils;
-import com.zyj.morseapp.utils.ptt.CWEncoder;
 import com.zyj.morseapp.utils.ptt.MyAudio;
 
 import java.io.ByteArrayOutputStream;
@@ -265,7 +264,7 @@ public class LongCoder extends AppCompatActivity {
                             public void run() {
                                 MorseAudio morseAudioObj2 = new MorseAudio();
                                 short[] longMorseStrArr = morseAudioObj2.codeConvert2Sound(str_morse, wpm);
-                                MyAudio.getInstance().playMorse(longMorseStrArr, longMorseStrArr.length, str_morse, wpm);
+                                MyAudio.getInstance().playMorse(str_morse, wpm);
                             }
                         }.start();
 
