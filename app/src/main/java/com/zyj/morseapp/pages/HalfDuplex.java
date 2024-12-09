@@ -203,8 +203,8 @@ public class HalfDuplex extends AppCompatActivity {
         }
         setTitle("设备ID：" + myDeviceId);
         longCodeDeviceIdInput = findViewById(R.id.deviceId_input);
-        longCodeGidInput = findViewById(R.id.Len_input);
         longCodeSpeedInput = findViewById(R.id.longCode_speed_input);
+
         longCodeOther = findViewById(R.id.other);
 
         shortCodeInput = findViewById(R.id.shortCode_input);
@@ -1254,7 +1254,7 @@ public class HalfDuplex extends AppCompatActivity {
 //                    String level = longCodeLevel.getText().toString() == null || longCodeLevel.getText().toString().equals("") ? "0" : longCodeLevel.getText().toString();
 //                    String mmDD = longCodeMMDD.getText().toString() == null || longCodeMMDD.getText().toString().equals("") ? "0820" : longCodeMMDD.getText().toString();
 //                    String hhMM = longCodeHHMM.getText().toString() == null || longCodeHHMM.getText().toString().equals("") ? "1255" : longCodeHHMM.getText().toString();
-                    String other = longCodeOther.getText().toString() == null || longCodeOther.getText().toString().equals("") ? "0" : longCodeOther.getText().toString();
+//                    String other = longCodeOther.getText().toString() == null || longCodeOther.getText().toString().equals("") ? "0" : longCodeOther.getText().toString();
 
                     shortCodeWpm = Integer.parseInt((shortCodeSpeedInput.getText().toString() == null) || (shortCodeSpeedInput.getText().toString().equals("")) ? String.valueOf(shortCodeWpm) : shortCodeSpeedInput.getText().toString());
                     String shortContent = shortCodeInput.getText().toString() == null ? "" : shortCodeInput.getText().toString();
