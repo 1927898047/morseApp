@@ -53,15 +53,15 @@
             tools:ignore="TouchTargetSizeCheck" />
 
         <EditText
-            android:id="@+id/Gid_input"
+            android:id="@+id/Len_input"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginTop="5dp"
             android:background="@drawable/translucent"
             android:ems="10"
             android:gravity="center"
-            android:hint="@string/Gid_input"
-            android:autofillHints="@string/Gid_input"
+            android:hint="@string/Len_input"
+            android:autofillHints="@string/Len_input"
             android:inputType="textPersonName"
             android:textCursorDrawable="@drawable/edittext_cursor"
             android:textSize="11sp"
@@ -73,26 +73,6 @@
             app:layout_constraintWidth_percent="0.40"
             tools:ignore="TouchTargetSizeCheck" />
 
-        <EditText
-            android:id="@+id/GNum_input"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginTop="5dp"
-            android:background="@drawable/translucent"
-            android:ems="10"
-            android:gravity="center"
-            android:hint="@string/GNum_input"
-            android:autofillHints="@string/GNum_input"
-            android:inputType="textPersonName"
-            android:textCursorDrawable="@drawable/edittext_cursor"
-            android:textSize="11sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHeight_percent="0.03"
-            app:layout_constraintHorizontal_bias="0.849"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/Gid_input"
-            app:layout_constraintWidth_percent="0.40"
-            tools:ignore="TouchTargetSizeCheck" />
 
         <EditText
             android:id="@+id/longCode_speed_input"
@@ -116,70 +96,7 @@
             app:layout_constraintWidth_percent="0.40"
             tools:ignore="TouchTargetSizeCheck" />
 
-        <EditText
-            android:id="@+id/level"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginTop="5dp"
-            android:background="@drawable/translucent"
-            android:ems="10"
-            android:gravity="center"
-            android:hint="@string/level"
-            android:autofillHints="@string/level"
-            android:inputType="textPersonName"
-            android:textCursorDrawable="@drawable/edittext_cursor"
-            android:textSize="11sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHeight_percent="0.03"
-            app:layout_constraintHorizontal_bias="0.85"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/GNum_input"
-            app:layout_constraintWidth_percent="0.40"
-            tools:ignore="TouchTargetSizeCheck" />
 
-        <EditText
-            android:id="@+id/mmdd"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginTop="5dp"
-            android:background="@drawable/translucent"
-            android:ems="10"
-            android:gravity="center"
-            android:hint="@string/mmdd"
-            android:autofillHints="@string/mmdd"
-            android:text="0820"
-            android:inputType="textPersonName"
-            android:textCursorDrawable="@drawable/edittext_cursor"
-            android:textSize="11sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHeight_percent="0.03"
-            app:layout_constraintHorizontal_bias="0.85"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/level"
-            app:layout_constraintWidth_percent="0.40"
-            tools:ignore="TouchTargetSizeCheck" />
-
-        <EditText
-            android:id="@+id/hhmm"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginTop="5dp"
-            android:background="@drawable/translucent"
-            android:ems="10"
-            android:gravity="center"
-            android:hint="@string/hhmm"
-            android:autofillHints="@string/hhmm"
-            android:inputType="textPersonName"
-            android:textCursorDrawable="@drawable/edittext_cursor"
-            android:textSize="11sp"
-            android:text="1255"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHeight_percent="0.03"
-            app:layout_constraintHorizontal_bias="0.85"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/mmdd"
-            app:layout_constraintWidth_percent="0.40"
-            tools:ignore="TouchTargetSizeCheck" />
 
         <EditText
             android:id="@+id/other"
@@ -198,7 +115,7 @@
             app:layout_constraintHeight_percent="0.03"
             app:layout_constraintHorizontal_bias="0.85"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/hhmm"
+            app:layout_constraintTop_toBottomOf="@id/Len_input"
             app:layout_constraintWidth_percent="0.40"
             tools:ignore="TouchTargetSizeCheck" />
 
@@ -210,13 +127,11 @@
             android:layout_marginEnd="16dp"
             android:background="@drawable/translucent"
             android:ems="10"
-            android:gravity="center"
+            android:gravity="start|top"
             android:hint="@string/shortCode_input"
-            android:autofillHints="@string/shortCode_input"
             android:inputType="textMultiLine"
-            android:maxLines="5"
             android:scrollbars="vertical"
-            android:textCursorDrawable="@drawable/edittext_cursor"
+            android:scrollHorizontally="false"
             android:textSize="14sp"
             android:text="1234 5678"
             app:layout_constraintEnd_toEndOf="parent"
@@ -230,7 +145,7 @@
 
 
         <TextView
-            android:id="@+id/output"
+            android:id="@+id/output1"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginStart="16dp"
@@ -270,7 +185,7 @@
             android:textSize="13sp"
             android:textStyle="bold"
             android:textColor="@color/text_color"
-            app:layout_constraintBottom_toBottomOf="@+id/output11"
+            app:layout_constraintBottom_toBottomOf="@+id/output7"
             app:layout_constraintEnd_toStartOf="@+id/output4"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/output4"
@@ -301,7 +216,7 @@
             tools:ignore="TouchTargetSizeCheck" />
 
         <TextView
-            android:id="@+id/output8"
+            android:id="@+id/output5"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginTop="5dp"
@@ -310,7 +225,7 @@
             android:focusable="true"
             android:gravity="center"
             android:longClickable="true"
-            android:text="@string/output8"
+            android:text="@string/output5"
             android:textIsSelectable="true"
             android:textSize="13sp"
             android:textStyle="bold"
@@ -324,8 +239,9 @@
             app:layout_constraintWidth_percent="0.25"
             tools:ignore="TouchTargetSizeCheck" />
 
+
         <TextView
-            android:id="@+id/output9"
+            android:id="@+id/output7"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginTop="5dp"
@@ -334,7 +250,7 @@
             android:focusable="true"
             android:gravity="center"
             android:longClickable="true"
-            android:text="@string/output9"
+            android:text="@string/output7"
             android:textIsSelectable="true"
             android:textSize="13sp"
             android:textStyle="bold"
@@ -343,13 +259,14 @@
             app:layout_constraintHeight_percent="0.03"
             app:layout_constraintHorizontal_bias="0.35"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/output8"
+            app:layout_constraintTop_toBottomOf="@+id/output6"
             app:layout_constraintVertical_bias="0.0"
             app:layout_constraintWidth_percent="0.25"
             tools:ignore="TouchTargetSizeCheck" />
 
+
         <TextView
-            android:id="@+id/output11"
+            android:id="@+id/output6"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginTop="5dp"
@@ -358,7 +275,7 @@
             android:focusable="true"
             android:gravity="center"
             android:longClickable="true"
-            android:text="@string/output11"
+            android:text="@string/output6"
             android:textIsSelectable="true"
             android:textSize="13sp"
             android:textStyle="bold"
@@ -367,13 +284,14 @@
             app:layout_constraintHeight_percent="0.03"
             app:layout_constraintHorizontal_bias="0.35"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/output16"
+            app:layout_constraintTop_toBottomOf="@+id/output5"
             app:layout_constraintVertical_bias="0.0"
             app:layout_constraintWidth_percent="0.25"
             tools:ignore="TouchTargetSizeCheck" />
 
+
         <TextView
-            android:id="@+id/output13"
+            android:id="@+id/output8"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginTop="5dp"
@@ -382,104 +300,7 @@
             android:focusable="true"
             android:gravity="center"
             android:longClickable="true"
-            android:text="@string/output13"
-            android:textIsSelectable="true"
-            android:textSize="13sp"
-            android:textStyle="bold"
-            android:textColor="@color/text_color"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHeight_percent="0.03"
-            app:layout_constraintHorizontal_bias="0.35"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/output9"
-            app:layout_constraintVertical_bias="0.0"
-            app:layout_constraintWidth_percent="0.25"
-            tools:ignore="TouchTargetSizeCheck" />
-
-        <TextView
-            android:id="@+id/output14"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginTop="5dp"
-            android:background="@drawable/translucent_background"
-            android:enabled="true"
-            android:focusable="true"
-            android:gravity="center"
-            android:longClickable="true"
-            android:text="@string/output14"
-            android:textIsSelectable="true"
-            android:textSize="13sp"
-            android:textStyle="bold"
-            android:textColor="@color/text_color"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHeight_percent="0.03"
-            app:layout_constraintHorizontal_bias="0.35"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/output13"
-            app:layout_constraintVertical_bias="0.0"
-            app:layout_constraintWidth_percent="0.25"
-            tools:ignore="TouchTargetSizeCheck" />
-
-        <TextView
-            android:id="@+id/output15"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginTop="5dp"
-            android:background="@drawable/translucent_background"
-            android:enabled="true"
-            android:focusable="true"
-            android:gravity="center"
-            android:longClickable="true"
-            android:text="@string/output15"
-            android:textIsSelectable="true"
-            android:textSize="13sp"
-            android:textStyle="bold"
-            android:textColor="@color/text_color"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHeight_percent="0.03"
-            app:layout_constraintHorizontal_bias="0.35"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/output14"
-            app:layout_constraintVertical_bias="0.0"
-            app:layout_constraintWidth_percent="0.25"
-            tools:ignore="TouchTargetSizeCheck" />
-
-        <TextView
-            android:id="@+id/output16"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginTop="5dp"
-            android:background="@drawable/translucent_background"
-            android:enabled="true"
-            android:focusable="true"
-            android:gravity="center"
-            android:longClickable="true"
-            android:text="@string/output16"
-            android:textIsSelectable="true"
-            android:textSize="13sp"
-            android:textStyle="bold"
-            android:textColor="@color/text_color"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHeight_percent="0.03"
-            app:layout_constraintHorizontal_bias="0.35"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/output15"
-            app:layout_constraintVertical_bias="0.0"
-            app:layout_constraintWidth_percent="0.25"
-            tools:ignore="TouchTargetSizeCheck" />
-
-
-        <TextView
-            android:id="@+id/output12"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginTop="5dp"
-            android:background="@drawable/translucent_background"
-            android:enabled="true"
-            android:focusable="true"
-            android:gravity="center"
-            android:longClickable="true"
-            android:text="@string/output12"
+            android:text="@string/output8"
             android:textIsSelectable="true"
             android:textSize="13sp"
             android:textStyle="bold"
@@ -509,8 +330,8 @@
             android:textSize="13sp"
             android:textStyle="bold"
             android:textColor="@color/text_color"
-            app:layout_constraintBottom_toBottomOf="@+id/output12"
-            app:layout_constraintEnd_toStartOf="@+id/output12"
+            app:layout_constraintBottom_toBottomOf="@+id/output8"
+            app:layout_constraintEnd_toStartOf="@+id/output8"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/shortCode_input"
             tools:ignore="SpeakableTextPresentCheck" />
@@ -533,7 +354,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:text="@string/start_half_duplex"
-            app:layout_constraintBottom_toTopOf="@+id/output"
+            app:layout_constraintBottom_toTopOf="@+id/output1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -559,7 +380,7 @@
             app:layout_constraintHeight_percent="0.03"
             app:layout_constraintEnd_toStartOf="@+id/snr_spinner"
             app:layout_constraintStart_toStartOf="@+id/output3"
-            app:layout_constraintTop_toBottomOf="@+id/output12" />
+            app:layout_constraintTop_toBottomOf="@+id/output8" />
 
         <Spinner
             android:id="@+id/snr_spinner"

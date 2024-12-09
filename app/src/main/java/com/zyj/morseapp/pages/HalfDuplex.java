@@ -204,12 +204,8 @@ public class HalfDuplex extends AppCompatActivity {
         }
         setTitle("设备ID：" + myDeviceId);
         longCodeDeviceIdInput = findViewById(R.id.deviceId_input);
-        longCodeGidInput = findViewById(R.id.Gid_input);
-        longCodeGNumInput = findViewById(R.id.GNum_input);
         longCodeSpeedInput = findViewById(R.id.longCode_speed_input);
-        longCodeLevel = findViewById(R.id.level);
-        longCodeHHMM = findViewById(R.id.hhmm);
-        longCodeMMDD = findViewById(R.id.mmdd);
+
         longCodeOther = findViewById(R.id.other);
         //TODO 新输入框
 //        maxGLenInput = findViewById(R.id.);
@@ -219,7 +215,7 @@ public class HalfDuplex extends AppCompatActivity {
 
         send_button = findViewById(R.id.send_button);
         start_half_duplex = findViewById(R.id.start_half_duplex);
-        output_text = findViewById(R.id.output);
+        output_text = findViewById(R.id.output1);
         input_text = findViewById(R.id.shortCode_input);
 
         MyOnClick myOnClick = new MyOnClick();
@@ -321,9 +317,9 @@ public class HalfDuplex extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        changeLongCodeGidInput(deviceId);
-        changeLongCodeGNumInput(deviceId);
-        changelongCodeLevel(deviceId);
+//        changeLongCodeGidInput(deviceId);
+//        changeLongCodeGNumInput(deviceId);
+//        changelongCodeLevel(deviceId);
         changeLongCodeOther(deviceId);
 
         // 创建文件
@@ -1254,12 +1250,12 @@ public class HalfDuplex extends AppCompatActivity {
                     // 收集发送信息
                     longCodeWpm = Integer.parseInt((longCodeSpeedInput.getText().toString() == null) || (longCodeSpeedInput.getText().toString().equals("")) ? String.valueOf(longCodeWpm) : longCodeSpeedInput.getText().toString());
                     String destDeviceId = longCodeDeviceIdInput.getText().toString() == null || longCodeDeviceIdInput.getText().toString().equals("") ? "0" : longCodeDeviceIdInput.getText().toString();
-                    String gid = longCodeGidInput.getText().toString() == null || longCodeGidInput.getText().toString().equals("") ? "0" : longCodeGidInput.getText().toString();
-                    String gNum = longCodeGNumInput.getText().toString() == null || longCodeGNumInput.getText().toString().equals("") ? "0" : longCodeGNumInput.getText().toString();
-                    String level = longCodeLevel.getText().toString() == null || longCodeLevel.getText().toString().equals("") ? "0" : longCodeLevel.getText().toString();
-                    String mmDD = longCodeMMDD.getText().toString() == null || longCodeMMDD.getText().toString().equals("") ? "0820" : longCodeMMDD.getText().toString();
-                    String hhMM = longCodeHHMM.getText().toString() == null || longCodeHHMM.getText().toString().equals("") ? "1255" : longCodeHHMM.getText().toString();
-                    String other = longCodeOther.getText().toString() == null || longCodeOther.getText().toString().equals("") ? "0" : longCodeOther.getText().toString();
+//                    String gid = longCodeGidInput.getText().toString() == null || longCodeGidInput.getText().toString().equals("") ? "0" : longCodeGidInput.getText().toString();
+//                    String gNum = longCodeGNumInput.getText().toString() == null || longCodeGNumInput.getText().toString().equals("") ? "0" : longCodeGNumInput.getText().toString();
+//                    String level = longCodeLevel.getText().toString() == null || longCodeLevel.getText().toString().equals("") ? "0" : longCodeLevel.getText().toString();
+//                    String mmDD = longCodeMMDD.getText().toString() == null || longCodeMMDD.getText().toString().equals("") ? "0820" : longCodeMMDD.getText().toString();
+//                    String hhMM = longCodeHHMM.getText().toString() == null || longCodeHHMM.getText().toString().equals("") ? "1255" : longCodeHHMM.getText().toString();
+//                    String other = longCodeOther.getText().toString() == null || longCodeOther.getText().toString().equals("") ? "0" : longCodeOther.getText().toString();
 
                     shortCodeWpm = Integer.parseInt((shortCodeSpeedInput.getText().toString() == null) || (shortCodeSpeedInput.getText().toString().equals("")) ? String.valueOf(shortCodeWpm) : shortCodeSpeedInput.getText().toString());
 //                    maxGLen = (maxGLenInput.getText().toString() == null) || (maxGLenInput.getText().toString().equals("")) ? maxGLen : Integer.parseInt(maxGLenInput.getText().toString());
