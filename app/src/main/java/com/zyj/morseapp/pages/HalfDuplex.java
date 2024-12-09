@@ -92,6 +92,7 @@ public class HalfDuplex extends AppCompatActivity {
     public static EditText longCodeMMDD = null;
     public static EditText longCodeHHMM = null;
     public static EditText longCodeOther = null;
+    public static EditText maxGLenInput = null;
 
     public static EditText shortCodeInput = null;
     public static EditText shortCodeSpeedInput = null;
@@ -106,7 +107,7 @@ public class HalfDuplex extends AppCompatActivity {
     public static int longCodeWpm = 25;
     public static int shortCodeWpm = 35;
     public static int recLongCodeWpm = longCodeWpm;
-
+    public static int maxGLen = 5;
     // 返回内容是长码或短码
     public static boolean recIsShortCode = false;
     public static boolean recIsLongCode = false;
@@ -210,7 +211,8 @@ public class HalfDuplex extends AppCompatActivity {
         longCodeHHMM = findViewById(R.id.hhmm);
         longCodeMMDD = findViewById(R.id.mmdd);
         longCodeOther = findViewById(R.id.other);
-
+        //TODO 新输入框
+//        maxGLenInput = findViewById(R.id.);
         shortCodeInput = findViewById(R.id.shortCode_input);
         shortCodeSpeedInput = findViewById(R.id.shortCode_speed_input);
 
@@ -969,7 +971,7 @@ public class HalfDuplex extends AppCompatActivity {
 
             int count = 0; // 轮询计数器
             boolean condition = false; // 用于检查的变量
-            while (count < maxAttempts && !condition) {
+            while (count < maxAttempts * 2 && !condition) {
                 System.out.println("【等待长码2报文线程】轮询收端响应: " + (count + 1) + "次");
                 // 阻塞并轮询
                 try {
@@ -1059,7 +1061,7 @@ public class HalfDuplex extends AppCompatActivity {
             refreshLogView("\n");
 
             // 等待报文响应
-            while (count < maxAttempts && !condition) {
+            while (count < maxAttempts * 2 && !condition) {
                 System.out.println("【等待长码2报文线程】轮询收端响应: " + (count + 1) + "次");
                 // 阻塞并轮询
                 try {
@@ -1145,7 +1147,7 @@ public class HalfDuplex extends AppCompatActivity {
             refreshLogView("\n");
 
             // 等待报文响应
-            while (count < maxAttempts && !condition) {
+            while (count < maxAttempts * 2 && !condition) {
                 System.out.println("【等待长码2报文线程】轮询收端响应: " + (count + 1) + "次");
                 // 阻塞并轮询
                 try {
@@ -1229,7 +1231,6 @@ public class HalfDuplex extends AppCompatActivity {
                 // 发送
                 case R.id.send_button:
                     preambleNum = Sockets.preambleNum;
-
                     if (audioRecord == null) {
                         // 重新初始化AudioRecord
                         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
@@ -1261,10 +1262,13 @@ public class HalfDuplex extends AppCompatActivity {
                     String other = longCodeOther.getText().toString() == null || longCodeOther.getText().toString().equals("") ? "0" : longCodeOther.getText().toString();
 
                     shortCodeWpm = Integer.parseInt((shortCodeSpeedInput.getText().toString() == null) || (shortCodeSpeedInput.getText().toString().equals("")) ? String.valueOf(shortCodeWpm) : shortCodeSpeedInput.getText().toString());
+//                    maxGLen = (maxGLenInput.getText().toString() == null) || (maxGLenInput.getText().toString().equals("")) ? maxGLen : Integer.parseInt(maxGLenInput.getText().toString());
                     String shortContent = shortCodeInput.getText().toString() == null ? "" : shortCodeInput.getText().toString();
                     // 将shortCode按组数分开
                     List<String> shortCodeGroup = MessageUtils.createShortCodeGroup(shortContent);
                     int gLenSum = MessageUtils.getNoTrimCode(shortContent).size();
+                    MessageUtils.setGLen(3);
+                    System.out.println("每包最大长度：" + MessageUtils.getGLen());
 
                     // 构建短码报文的发送缓冲区
                     List<String> shortCodeCrcList = new ArrayList<>();
@@ -1272,7 +1276,7 @@ public class HalfDuplex extends AppCompatActivity {
                     shortCodeMessageContentCacheForSend = new ArrayList<>();
                     shortMorseCacheForSend = new ArrayList<>();
                     for (int i = 0; i < shortCodeGroup.size(); i++){
-                        ShortCodeMessage shortCodeMessage = new ShortCodeMessage(String.valueOf(i), String.valueOf(0), shortCodeGroup.get(i));
+                        ShortCodeMessage shortCodeMessage = new ShortCodeMessage(String.valueOf(i), String.valueOf(MessageUtils.getNoTrimCode(shortCodeGroup.get(i)).size()), shortCodeGroup.get(i));
                         shortCodeCrcList.add(MessageUtils.getCRC16(shortCodeMessage.getShortCodeText()));
                         shortCodeMessageCacheForSend.add(shortCodeMessage);
                         String shortCodeMessageContent = shortCodeMessage.getShortCodeMessage();
@@ -1692,7 +1696,7 @@ public class HalfDuplex extends AppCompatActivity {
                             recIsLongCode = false;
 
 
-                            refreshLogView("[7]接收到短码报文，内容:" + shortCodeContentForDisplay);
+                            refreshLogView("[7]接收到短码报文，内容:" + shortCodeContentForDisplay.delete(shortCodeContentForDisplay.length() -1, shortCodeContentForDisplay.length()));
                             refreshLogView("\n");
                             refreshLogView("[7]短码报文CRC校验成功！");
                             refreshLogView("\n");

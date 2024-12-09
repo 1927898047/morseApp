@@ -12,8 +12,12 @@ public class MessageUtils {
     // 每包的短码报文长度
     private static int gLen = 3;
 
-    public static void setgLen(int num){
+    public static void setGLen(int num){
         gLen = num;
+    }
+
+    public static int getGLen(){
+        return gLen;
     }
 
     // 初始化CRC16查找表
