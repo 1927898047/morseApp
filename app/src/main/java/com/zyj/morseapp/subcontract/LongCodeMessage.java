@@ -26,15 +26,19 @@ public class LongCodeMessage {
     // 长码报文的CRC
     private String longCrc;
 
+    // 短码报文码速
+    private int shortCodeWpm;
+
 
     public LongCodeMessage(String senderId, String receiverId, String gLen, String gLenSum,
-                           String groupNum, List<String> shortCrcList){
+                           String groupNum, List<String> shortCrcList, int shortCodeWpm){
         this.senderId = senderId;
         this.receiverId = receiverId;
         this.gLen = gLen;
         this.gLenSum = gLenSum;
         this.groupNum = groupNum;
         this.shortCrcList = shortCrcList;
+        this.shortCodeWpm = shortCodeWpm;
     }
 
 
@@ -46,7 +50,8 @@ public class LongCodeMessage {
                 + receiverId + " "
                 + gLen + " "
                 + gLenSum + " "
-                + groupNum + " ";
+                + groupNum + " "
+                + shortCodeWpm + " ";
 
         for (String str : shortCrcList){
             longCodeMessage = longCodeMessage + str + " ";
@@ -58,7 +63,8 @@ public class LongCodeMessage {
                 + receiverId + " "
                 + gLen + " "
                 + gLenSum + " "
-                + groupNum + " ";
+                + groupNum + " "
+                + shortCodeWpm + " ";
         for (String str : shortCrcList){
             temp = temp + str + " ";
         }

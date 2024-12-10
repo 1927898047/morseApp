@@ -189,7 +189,8 @@ public class HalfDuplex extends AppCompatActivity {
     int emptyShortCodeTime = 0;
     // 最大次数
     int maxEmptyShortCodeTime = 3;
-
+    // 长码信息中的短码码速
+    int shortCodeWpmInLongCode = 35;
     HalfDuplexMode mode;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -207,8 +208,7 @@ public class HalfDuplex extends AppCompatActivity {
         longCodeSpeedInput = findViewById(R.id.longCode_speed_input);
 
         longCodeOther = findViewById(R.id.other);
-        //TODO 新输入框
-//        maxGLenInput = findViewById(R.id.);
+        maxGLenInput = findViewById(R.id.Len_input);
         shortCodeInput = findViewById(R.id.shortCode_input);
         shortCodeSpeedInput = findViewById(R.id.shortCode_speed_input);
 
@@ -545,6 +545,9 @@ public class HalfDuplex extends AppCompatActivity {
                                     e.printStackTrace();
                                 }
                             }
+                            refreshLogView("[3]第" + index + "包短码发送完成！");
+                            refreshLogView("\n");
+
                             latchForMultiSend1.countDown();
                         }
                     });
@@ -611,6 +614,8 @@ public class HalfDuplex extends AppCompatActivity {
                                     e.printStackTrace();
                                 }
                             }
+                            refreshLogView("[3]第" + index + "包短码发送完成！");
+                            refreshLogView("\n");
                             latchForMultiSend2.countDown();
                         }
                     });
@@ -674,6 +679,8 @@ public class HalfDuplex extends AppCompatActivity {
                                     e.printStackTrace();
                                 }
                             }
+                            refreshLogView("[3]第" + index + "包短码发送完成！");
+                            refreshLogView("\n");
                             latchForMultiSend3.countDown();
                         }
                     });
@@ -1258,12 +1265,12 @@ public class HalfDuplex extends AppCompatActivity {
 //                    String other = longCodeOther.getText().toString() == null || longCodeOther.getText().toString().equals("") ? "0" : longCodeOther.getText().toString();
 
                     shortCodeWpm = Integer.parseInt((shortCodeSpeedInput.getText().toString() == null) || (shortCodeSpeedInput.getText().toString().equals("")) ? String.valueOf(shortCodeWpm) : shortCodeSpeedInput.getText().toString());
-//                    maxGLen = (maxGLenInput.getText().toString() == null) || (maxGLenInput.getText().toString().equals("")) ? maxGLen : Integer.parseInt(maxGLenInput.getText().toString());
+                    maxGLen = (maxGLenInput.getText().toString() == null) || (maxGLenInput.getText().toString().equals("")) ? 5 : Integer.parseInt(maxGLenInput.getText().toString());
                     String shortContent = shortCodeInput.getText().toString() == null ? "" : shortCodeInput.getText().toString();
                     // 将shortCode按组数分开
+                    MessageUtils.setGLen(maxGLen);
                     List<String> shortCodeGroup = MessageUtils.createShortCodeGroup(shortContent);
                     int gLenSum = MessageUtils.getNoTrimCode(shortContent).size();
-                    MessageUtils.setGLen(3);
                     System.out.println("每包最大长度：" + MessageUtils.getGLen());
 
                     // 构建短码报文的发送缓冲区
@@ -1284,7 +1291,7 @@ public class HalfDuplex extends AppCompatActivity {
                     Arrays.fill(shortMorseCheckFlag, 1);
                     // 构建长码报文
                     longCodeMessage = new LongCodeMessage(myDeviceId, destDeviceId, String.valueOf(0), String.valueOf(gLenSum),
-                            String.valueOf(shortCodeMessageCacheForSend.size()), shortCodeCrcList);
+                            String.valueOf(shortCodeMessageCacheForSend.size()), shortCodeCrcList, shortCodeWpm);
                     longCodeMessageContent = longCodeMessage.getLongCodeMessage();
                     longMorseContent = morseLongCoder.encode(longCodeMessageContent);
 
@@ -1525,14 +1532,14 @@ public class HalfDuplex extends AppCompatActivity {
                 }
                 else {
                     // 匹配到短码，准备发送内容
-                    if (object.has("content") && object.getJSONArray("content").length() != 0) {
+                    if (!Objects.isNull(mode) && mode.equals(HalfDuplexMode.RECEIVE_SHORT_CODE) &&
+                            object.has("content") && object.getJSONArray("content").length() != 0) {
                         content = object.getJSONArray("content").toString();
                         if (content.contains("+++")) {
                             JSONArray contentArr;
                             String crcContent = "";
                             String checkedCrcCode;
                             try {
-                                mode = HalfDuplexMode.RECEIVE_SHORT_CODE;
                                 emptyShortCodeTime = 0;
                                 contentArr = object.getJSONArray("content");
                                 crcContent = "";
@@ -1547,19 +1554,21 @@ public class HalfDuplex extends AppCompatActivity {
 
                                 // 拿到一包报文
                                 List<String> shortCodes = MessageUtils.getNoTrimCode(crcContent);
-                                String tempShortText = "";
+                                StringBuilder tempShortText = new StringBuilder();
                                 String id = shortCodes.get(0).trim();
                                 for (int i = 0; i < shortCodes.size(); i++){
-                                    tempShortText = tempShortText + shortCodes.get(i) + " ";
+                                    tempShortText = tempShortText.append(shortCodes.get(i)).append(" ");
                                 }
-                                tempShortText = tempShortText.trim();
-                                crcContent = tempShortText;
-                                checkedCrcCode = MessageUtils.getCRC16(tempShortText);
+                                crcContent = tempShortText.toString().trim();
+                                checkedCrcCode = MessageUtils.getCRC16(crcContent);
                                 // 该包报文crc和长码中相的的crc一致
                                 if (checkedCrcCode.equals(shortCrcListForRec.get(Integer.parseInt(id)))){
-                                    shortCodeTextMap.put(id, tempShortText);
+                                    shortCodeTextMap.put(id, tempShortText.toString().trim());
                                     shortCodeContentForDisplay.append(content).append("\n");
                                     System.out.println("报文" + id + "：校验成功！");
+                                    System.out.println("tempShortText: " + tempShortText.toString().trim());
+                                    refreshLogView("[7]短码报文CRC校验成功，短码报文内容：" + content);
+                                    refreshLogView("\n");
                                 } else {
                                     System.out.println("报文" + id + "：校验失败！");
                                 }
@@ -1602,7 +1611,16 @@ public class HalfDuplex extends AppCompatActivity {
                                     // 从解码内容中获取两个CRC
                                     List<String> noTrimCode = MessageUtils.getNoTrimCode(validContent);
                                     shortCrcListForRec = new ArrayList<>();
-                                    for (int i = 7; i < noTrimCode.size() - 1; i++){
+
+                                    // 拿到短码码速
+                                    try {
+                                        shortCodeWpmInLongCode = Integer.parseInt(noTrimCode.get(7));
+                                        System.out.println("拿到长码中的短码码速：" + String.valueOf(shortCodeWpmInLongCode) + "wpm");
+                                    } catch (Exception e){
+                                        shortCodeWpmInLongCode = 35;
+                                        System.out.println("未拿到长码中的短码码速，默认：" + String.valueOf(shortCodeWpmInLongCode) + "wpm");
+                                    }
+                                    for (int i = 8; i < noTrimCode.size() - 1; i++){
                                         shortCrcListForRec.add(noTrimCode.get(i));
                                     }
                                     longCrcCode = StringUtils.getLongCrc(content);
@@ -1628,14 +1646,16 @@ public class HalfDuplex extends AppCompatActivity {
                                     morseStr1 = morseLongCoder.encode(recv_content1);
                                     // 接收到长码
                                     recIsLongCode = true;
-                                    refreshLogView("[5]接收到连接报文，内容:" + content);
+                                    refreshLogView("[5]接收到连接报文，内容：" + content);
                                     refreshLogView("\n");
                                     refreshLogView("[5]连接报文CRC校验成功！");
                                     refreshLogView("\n");
 
                                     System.out.println("准备发送连接应答！");
+                                    // 切换到接收短码模式
+                                    mode = HalfDuplexMode.RECEIVE_SHORT_CODE;
                                 } else {
-                                    refreshLogView("[5]接收到连接报文，内容:" + content);
+                                    refreshLogView("[5]接收到连接报文，内容：" + content);
                                     refreshLogView("\n");
                                     refreshLogView("[5]连接报文CRC校验失败！");
                                     refreshLogView("\n");
@@ -1671,6 +1691,17 @@ public class HalfDuplex extends AppCompatActivity {
                                         + "9801 "
                                         + "Ready "
                                         + "K K K";
+                                // 拿到所有报文
+                                StringBuilder sb = new StringBuilder();
+                                for (int i = 0; i < shortCodeTextMap.size(); i++){
+                                    String shortCodeText = shortCodeTextMap.get(String.valueOf(i));
+                                    List<String> shortCodes = MessageUtils.getNoTrimCode(shortCodeText);
+                                    for (int j = 2; j < shortCodes.size(); j++){
+                                        sb.append(shortCodes.get(j)).append(" ");
+                                    }
+                                }
+                                refreshLogView("[7]报文全部接收完毕，内容：" + sb.toString().trim());
+                                refreshLogView("\n");
                             } else {
                                 StringBuilder idBuilder = new StringBuilder();
                                 for (String id : uncheckedPkgIds){
@@ -1692,11 +1723,13 @@ public class HalfDuplex extends AppCompatActivity {
                             recIsLongCode = false;
 
 
-                            refreshLogView("[7]接收到短码报文，内容:" + shortCodeContentForDisplay.delete(shortCodeContentForDisplay.length() -1, shortCodeContentForDisplay.length()));
-                            refreshLogView("\n");
-                            refreshLogView("[7]短码报文CRC校验成功！");
-                            refreshLogView("\n");
+//                            refreshLogView("[7]接收到短码报文，内容:" + shortCodeContentForDisplay.delete(shortCodeContentForDisplay.length() -1, shortCodeContentForDisplay.length()));
+//                            refreshLogView("\n");
+//                            refreshLogView("[7]短码报文CRC校验成功！");
+//                            refreshLogView("\n");
                             System.out.println("准备发送响应应答！");
+
+//                            shortCodeContentForDisplay.delete(0, shortCodeContentForDisplay.length());
                         }
                     }
                 }

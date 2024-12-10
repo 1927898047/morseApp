@@ -354,14 +354,7 @@ public class MyAudio
 				m_bIsSending = false;
 			}
 		}).start();
-//		final  short[] szData = data;
-//		final int iLen = iLength;
-//		new Thread(new Runnable() {
-//			@Override
-//			public void run() {
-//				int iResult = mAudioPlayer.write(szData,0,iLen);
-//			}
-//		}).start();
+
 	}
 
 	private void setPower(boolean isOn, String power_path)

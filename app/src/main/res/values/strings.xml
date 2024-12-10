@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">morseApp-v6.10</string>
+    <string name="app_name">morseApp-v6.11</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
@@ -11,7 +11,7 @@
     <string name="shortCode_input">请输入短码内容</string>
     <string name="output4">目标设备号</string>
     <string name="deviceId_input">请输入设备号</string>
-    <string name="output5">包最大长度</string>
+    <string name="output5">最大组数/包</string>
     <string name="Len_input">请输入长度</string>
     <string name="output6">附注</string>
     <string name="other">请输入附注</string>

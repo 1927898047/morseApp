@@ -134,10 +134,15 @@ public class MessageUtils {
         int startIndex = input.indexOf("DE");
         int endIndex = input.indexOf("READY");
 
-        List<String> noTrimCode = getNoTrimCode(input.substring(startIndex, endIndex));
-        for (int i = 2; i < noTrimCode.size() - 1; i++){
-            resultList.add(noTrimCode.get(i));
+        try {
+            List<String> noTrimCode = getNoTrimCode(input.substring(startIndex, endIndex));
+            for (int i = 2; i < noTrimCode.size() - 1; i++){
+                resultList.add(noTrimCode.get(i));
+            }
+        } catch (Exception e){
+            return new ArrayList<>();
         }
+
         return resultList;
     }
 
