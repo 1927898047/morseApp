@@ -96,7 +96,7 @@
             android:focusable="true"
             android:gravity="center"
             android:longClickable="true"
-            android:text="超时时间："
+            android:text="超时时间(秒)"
             android:textStyle="bold"
             android:textIsSelectable="true"
             android:textColor="@color/text_color"

@@ -6,8 +6,8 @@ import com.zyj.morseapp.utils.MessageUtils;
 import java.util.List;
 
 public class LongCodeMessage {
-    private static String head = "R R R DE";
-    private static String tail = "K K K";
+    private static String head = "RRR DE";
+    private static String tail = "KKK";
     private String senderId;
     private String receiverId;
 
@@ -46,7 +46,7 @@ public class LongCodeMessage {
     public String getLongCodeMessage(){
         String longCodeMessage = head + " "
                 + senderId + " "
-                + "CALLING "
+                + "CQ "
                 + receiverId + " "
                 + gLen + " "
                 + gLenSum + " "
@@ -59,7 +59,7 @@ public class LongCodeMessage {
 
         String temp = "DE "
                 + senderId + " "
-                + "CALLING "
+                + "CQ "
                 + receiverId + " "
                 + gLen + " "
                 + gLenSum + " "

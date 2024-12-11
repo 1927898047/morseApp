@@ -133,7 +133,7 @@
             android:scrollbars="vertical"
             android:scrollHorizontally="false"
             android:textSize="15sp"
-            android:text="1234 5678"
+            android:text="0000 1111 2222 3333 4444 5555 6666 7777 8888 9999"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHeight_default="percent"
             app:layout_constraintHeight_percent="0.2"

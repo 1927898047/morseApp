@@ -5,7 +5,7 @@ public class StringUtils {
     public static String getId1FromLongCode(String inputString) {
         String[] parts = inputString.split("DE");
         if (parts.length > 1) {
-            String[] subParts = parts[1].split("CALLING");
+            String[] subParts = parts[1].split("CQ");
             if (subParts.length > 0) {
                 String value = subParts[0];
                 value = value.trim();
@@ -17,7 +17,7 @@ public class StringUtils {
 
 
     public static String getId2FromLongCode(String inputString) {
-        String[] parts = inputString.split("CALLING ");
+        String[] parts = inputString.split("CQ ");
         if (parts.length > 1) {
             String[] subParts = parts[1].split(" ");
             if (subParts.length > 0) {
@@ -31,7 +31,7 @@ public class StringUtils {
     public static String getId1FromShortCode(String inputString) {
         String[] parts = inputString.split("DE");
         if (parts.length > 1) {
-            String[] subParts = parts[1].split("CALLING");
+            String[] subParts = parts[1].split("CQ");
             if (subParts.length > 0) {
                 String value = subParts[0];
                 value = value.trim();
@@ -53,7 +53,7 @@ public class StringUtils {
         return "-1";
     }
 
-    // TODO 设备号获取
+    // 设备号获取
     public static String getId1FromRecLongCodeMessage1(String inputString) {
 
 //         获取最后一个"R "的索引
@@ -66,22 +66,15 @@ public class StringUtils {
         return "-1";
     }
 
-    public static String getShortCrc(String inputString) {
-        int firstKIndex = inputString.indexOf("K K");
-        int startIndex = firstKIndex - 5;
-        firstKIndex = firstKIndex - 5;
-        startIndex = startIndex - 5;
-        return inputString.substring(startIndex, firstKIndex).trim();
-    }
 
     public static String getLongCrc(String inputString) {
-        int firstKIndex = inputString.indexOf("K K");
+        int firstKIndex = inputString.indexOf("KK");
         int startIndex = firstKIndex - 5;
         return inputString.substring(startIndex, firstKIndex).trim();
     }
 
 
-    // TODO 设备号获取
+    // 设备号获取
     public static String getId2FromRecLongCodeMessage1(String inputString) {
         String[] parts = inputString.split("DE");
         if (parts.length > 1) {
@@ -141,7 +134,7 @@ public class StringUtils {
 
     public static String getContentFromLongCode(String inputString) {
         int start = inputString.indexOf("DE");
-        int end = inputString.indexOf(" K K");
+        int end = inputString.indexOf(" KK");
         return inputString.substring(start, end).trim();
     }
 }

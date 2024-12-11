@@ -191,7 +191,23 @@ public class HalfDuplex extends AppCompatActivity {
     int maxEmptyShortCodeTime = 3;
     // 长码信息中的短码码速
     int shortCodeWpmInLongCode = 35;
+    // 长码信息中的短码总组数
+    int shortCodeGroupNum;
+    // 长码信息中的总包数
+    int shortCodePkgNum;
+    // 长码信息中的每包最大组数
+    int shortCodeGLen;
     HalfDuplexMode mode;
+
+    // 接收短码时
+    // 短码报文是不是第一组
+    boolean isFirstPkg = false;
+    boolean isStopWaiting = false;
+    boolean isEarlyStop = false;
+    // 遍历次数
+    int waitShortCodeTime;
+    // 短码报文中的最后一包ID
+    int lastOnePkgId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -403,10 +419,13 @@ public class HalfDuplex extends AppCompatActivity {
     private class SendLongCodeAsyncTask implements Runnable {
         private String content;
         private int wpm;
+        // 摩尔斯文本
+        private String longCodeContent;
 
-        public SendLongCodeAsyncTask(String content, int wpm) {
+        public SendLongCodeAsyncTask(String content, int wpm, String longCodeContent) {
             this.content = content;
             this.wpm = wpm;
+            this.longCodeContent = longCodeContent;
         }
 
         @Override
@@ -419,7 +438,10 @@ public class HalfDuplex extends AppCompatActivity {
 
             System.out.println("【发送长码报文线程】启动！");
             System.out.println("【发送长码报文线程】正在进行第一次长码发送...");
+
             refreshLogView("[1]第一次发送连接报文...");
+            refreshLogView("\n");
+            refreshLogView("[1]连接报文内容：" + "\n" + longCodeContent);
             refreshLogView("\n");
             // 发送过程，关闭录音
             stopRecording();
@@ -442,6 +464,8 @@ public class HalfDuplex extends AppCompatActivity {
 
             System.out.println("【发送长码报文线程】正在进行第二次长码发送...");
             refreshLogView("[1]第二次发送连接报文...");
+            refreshLogView("\n");
+            refreshLogView("[1]连接报文内容：" + "\n" + longCodeContent);
             refreshLogView("\n");
 
             // 发送过程，关闭录音
@@ -470,7 +494,8 @@ public class HalfDuplex extends AppCompatActivity {
             System.out.println("【发送长码报文线程】正在进行第三次长码发送...");
             refreshLogView("[1]第三次发送连接报文...");
             refreshLogView("\n");
-
+            refreshLogView("[1]连接报文内容：" + "\n" + longCodeContent);
+            refreshLogView("\n");
             // 发送过程，关闭录音
             stopRecording();
             // 发送报文
@@ -532,11 +557,14 @@ public class HalfDuplex extends AppCompatActivity {
                     sendTime++;
                     String str = shortMorseCacheForSend.get(i);
                     String index = String.valueOf(i + 1);
+                    int tempIndex = i;
                     boolean lastOne = sendTime == count;
                     multiShortCodePkgSendingExec.submit(new Runnable() {
                         @Override
                         public void run() {
                             System.out.println("<=========发送第" + index + "个短码数据包=========>");
+                            refreshLogView("[3]第" + index + "包短码内容：" + "\n" + shortCodeMessageContentCacheForSend.get(tempIndex));
+                            refreshLogView("\n");
                             sendShortMorseCode(str, wpm);
                             if (!lastOne){
                                 try {
@@ -601,11 +629,14 @@ public class HalfDuplex extends AppCompatActivity {
                     sendTime++;
                     String str = shortMorseCacheForSend.get(i);
                     String index = String.valueOf(i + 1);
+                    int tempIndex = i;
                     boolean lastOne = sendTime == count;
                     multiShortCodePkgSendingExec.submit(new Runnable() {
                         @Override
                         public void run() {
                             System.out.println("<=========发送第" + index + "个短码数据包=========>");
+                            refreshLogView("[3]第" + index + "包短码内容：" + "\n" + shortCodeMessageContentCacheForSend.get(tempIndex));
+                            refreshLogView("\n");
                             sendShortMorseCode(str, wpm);
                             if (!lastOne){
                                 try {
@@ -666,11 +697,14 @@ public class HalfDuplex extends AppCompatActivity {
                     sendTime++;
                     String str = shortMorseCacheForSend.get(i);
                     String index = String.valueOf(i + 1);
+                    int tempIndex = i;
                     boolean lastOne = sendTime == count;
                     multiShortCodePkgSendingExec.submit(new Runnable() {
                         @Override
                         public void run() {
                             System.out.println("<=========发送第" + index + "个短码数据包=========>");
+                            refreshLogView("[3]第" + index + "包短码内容：" + "\n" + shortCodeMessageContentCacheForSend.get(tempIndex));
+                            refreshLogView("\n");
                             sendShortMorseCode(str, wpm);
                             if (!lastOne){
                                 try {
@@ -746,7 +780,7 @@ public class HalfDuplex extends AppCompatActivity {
                     // 如果返回内容的设备号匹配，则进入下一个状态
                     // 启动发送短码的线程 && 启动接收短码的线程
                     // 接受内容判断是该设备
-                    if ((destDeviceId.equals(myDeviceId) && rec_content.contains("K"))) {
+                    if ((destDeviceId.equals(myDeviceId) && rec_content.contains("KK"))) {
                         // 收到响应报文后，延时6s，防止报文未接收完
                         refreshLogView("[2]收到连接报文响应！");
                         refreshLogView("\n");
@@ -816,7 +850,7 @@ public class HalfDuplex extends AppCompatActivity {
                     // 如果返回内容的设备号匹配，则进入下一个状态
                     // 启动发送短码的线程 && 启动接收短码的线程
                     // 接受内容判断是该设备
-                    if ((destDeviceId.equals(myDeviceId) && rec_content.contains("K K"))) {
+                    if ((destDeviceId.equals(myDeviceId) && rec_content.contains("KK"))) {
                         // 收到响应报文后，延时6s，防止报文未接收完
                         refreshLogView("[2]收到连接报文响应！");
                         refreshLogView("\n");
@@ -889,7 +923,7 @@ public class HalfDuplex extends AppCompatActivity {
                     // 如果返回内容的设备号匹配，则进入下一个状态
                     // 启动发送短码的线程 && 启动接收短码的线程
                     // 接受内容判断是该设备
-                    if ((destDeviceId.equals(myDeviceId) && rec_content.contains("K K"))) {
+                    if ((destDeviceId.equals(myDeviceId) && rec_content.contains("KK"))) {
                         // 收到响应报文后，延时6s，防止报文未接收完
                         refreshLogView("[2]收到连接报文响应！");
                         refreshLogView("\n");
@@ -990,20 +1024,25 @@ public class HalfDuplex extends AppCompatActivity {
                     // 如果返回内容的设备号匹配，则进入下一个状态
                     // 启动发送短码的线程 && 启动接收短码的线程
                     // 接受内容判断是该设备
-                    if ((destDeviceId.equals(myDeviceId) && rec_content.contains("K") && rec_content.contains("9801"))) {
+                    if ((destDeviceId.equals(myDeviceId) && rec_content.contains("KK") && rec_content.contains("9801"))) {
                         if (rec_content.contains("OK")){
                             // 接收到短码，关闭发送短码线程
                             recLongCodeMessage2 = true;
                             synchronized (lock2) {
                                 lock2.notify();
                             }
-                            refreshLogView("[4]收到短码报文响应，发送结束！");
+                            // 解析响应内容
+                            JSONObject object = new JSONObject(rec_content);
+                            String talkContent = object.getString("talkContent");
+                            refreshLogView("[4]收到短码报文响应，内容：" + "\n" + talkContent);
+                            refreshLogView("\n");
+
+                            refreshLogView("[4]响应OK，发送结束！");
                             refreshLogView("\n");
 
                             System.out.println("【等待长码2报文线程】收到长码接收报文，线程结束！");
                             return;
                         } else {
-                            System.out.println("rec_content:" + rec_content);
 
                             // 解析响应内容
                             JSONObject object = new JSONObject(rec_content);
@@ -1015,9 +1054,12 @@ public class HalfDuplex extends AppCompatActivity {
                             for (String id : idListFromLongCodeRec2){
                                 shortMorseCheckFlag[Integer.parseInt(id)] = 1;
                             }
-                            refreshLogView("[4]收到短码报文响应，报文不完整，继续接收！");
+                            System.out.println("rec_content:" + rec_content);
+                            refreshLogView("[4]收到短码报文响应，内容：" + "\n" + talkContent);
                             refreshLogView("\n");
 
+                            refreshLogView("[4]短码报文不完整，继续发送！");
+                            refreshLogView("\n");
                             break;
                         }
                     }
@@ -1080,20 +1122,25 @@ public class HalfDuplex extends AppCompatActivity {
                     // 如果返回内容的设备号匹配，则进入下一个状态
                     // 启动发送短码的线程 && 启动接收短码的线程
                     // 接受内容判断是该设备
-                    if ((destDeviceId.equals(myDeviceId) && rec_content.contains("K K") && rec_content.contains("9801"))) {
+                    if ((destDeviceId.equals(myDeviceId) && rec_content.contains("KK") && rec_content.contains("9801"))) {
                         if (rec_content.contains("OK")){
                             // 接收到短码，关闭发送短码线程
                             recLongCodeMessage2 = true;
                             synchronized (lock2) {
                                 lock2.notify();
                             }
-                            refreshLogView("[4]收到短码报文响应，发送结束！");
+                            // 解析响应内容
+                            JSONObject object = new JSONObject(rec_content);
+                            String talkContent = object.getString("talkContent");
+                            refreshLogView("[4]收到短码报文响应，内容：" + "\n" + talkContent);
+                            refreshLogView("\n");
+
+                            refreshLogView("[4]响应OK，发送结束！");
                             refreshLogView("\n");
 
                             System.out.println("【等待长码2报文线程】收到长码接收报文，线程结束！");
                             return;
                         } else {
-                            System.out.println("rec_content:" + rec_content);
 
                             // 解析响应内容
                             JSONObject object = new JSONObject(rec_content);
@@ -1105,7 +1152,11 @@ public class HalfDuplex extends AppCompatActivity {
                             for (String id : idListFromLongCodeRec2){
                                 shortMorseCheckFlag[Integer.parseInt(id)] = 1;
                             }
-                            refreshLogView("[4]收到短码报文响应，报文不完整，继续接收！");
+                            System.out.println("rec_content:" + rec_content);
+                            refreshLogView("[4]收到短码报文响应，内容：" + "\n" + talkContent);
+                            refreshLogView("\n");
+
+                            refreshLogView("[4]短码报文不完整，继续发送！");
                             refreshLogView("\n");
                             break;
                         }
@@ -1166,20 +1217,25 @@ public class HalfDuplex extends AppCompatActivity {
                     // 如果返回内容的设备号匹配，则进入下一个状态
                     // 启动发送短码的线程 && 启动接收短码的线程
                     // 接受内容判断是该设备
-                    if ((destDeviceId.equals(myDeviceId) && rec_content.contains("K K") && rec_content.contains("9801"))) {
+                    if ((destDeviceId.equals(myDeviceId) && rec_content.contains("KK") && rec_content.contains("9801"))) {
                         if (rec_content.contains("OK")){
                             // 接收到短码，关闭发送短码线程
                             recLongCodeMessage2 = true;
                             synchronized (lock2) {
                                 lock2.notify();
                             }
-                            refreshLogView("[4]收到短码报文响应，发送结束！");
+                            // 解析响应内容
+                            JSONObject object = new JSONObject(rec_content);
+                            String talkContent = object.getString("talkContent");
+                            refreshLogView("[4]收到短码报文响应，内容：" + "\n" + talkContent);
+                            refreshLogView("\n");
+
+                            refreshLogView("[4]响应OK，发送结束！");
                             refreshLogView("\n");
 
                             System.out.println("【等待长码2报文线程】收到长码接收报文，线程结束！");
                             return;
                         } else {
-                            System.out.println("rec_content:" + rec_content);
 
                             // 解析响应内容
                             JSONObject object = new JSONObject(rec_content);
@@ -1191,7 +1247,11 @@ public class HalfDuplex extends AppCompatActivity {
                             for (String id : idListFromLongCodeRec2){
                                 shortMorseCheckFlag[Integer.parseInt(id)] = 1;
                             }
-                            refreshLogView("[4]收到短码报文响应，报文不完整，继续接收！");
+                            System.out.println("rec_content:" + rec_content);
+                            refreshLogView("[4]收到短码报文响应，内容：" + "\n" + talkContent);
+                            refreshLogView("\n");
+
+                            refreshLogView("[4]短码报文不完整，继续发送！");
                             refreshLogView("\n");
                             break;
                         }
@@ -1233,7 +1293,12 @@ public class HalfDuplex extends AppCompatActivity {
             switch (view.getId()) {
                 // 发送
                 case R.id.send_button:
-                    preambleNum = Sockets.preambleNum;
+                    String preambleNumTxt = context.getExternalFilesDir("").getAbsolutePath()+"/preambleNum.txt";
+                    try {
+                        preambleNum = Integer.valueOf(FileUtils.readTxt(preambleNumTxt));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     if (audioRecord == null) {
                         // 重新初始化AudioRecord
                         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
@@ -1290,7 +1355,7 @@ public class HalfDuplex extends AppCompatActivity {
                     // 初始化后全为1，代表全部发送
                     Arrays.fill(shortMorseCheckFlag, 1);
                     // 构建长码报文
-                    longCodeMessage = new LongCodeMessage(myDeviceId, destDeviceId, String.valueOf(0), String.valueOf(gLenSum),
+                    longCodeMessage = new LongCodeMessage(myDeviceId, destDeviceId, String.valueOf(maxGLen), String.valueOf(gLenSum),
                             String.valueOf(shortCodeMessageCacheForSend.size()), shortCodeCrcList, shortCodeWpm);
                     longCodeMessageContent = longCodeMessage.getLongCodeMessage();
                     longMorseContent = morseLongCoder.encode(longCodeMessageContent);
@@ -1301,8 +1366,11 @@ public class HalfDuplex extends AppCompatActivity {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+
+                    refreshLogView("<==================>");
+                    refreshLogView("\n");
                     // 发送长码报文
-                    Thread thread1 = new Thread(new SendLongCodeAsyncTask(longMorseContent, longCodeWpm));
+                    Thread thread1 = new Thread(new SendLongCodeAsyncTask(longMorseContent, longCodeWpm, longCodeMessageContent));
                     // 等待长码响应
                     Thread thread2 = new Thread(new WaitLongCode1AsyncTask());
                     // 发送短码报文
@@ -1474,6 +1542,77 @@ public class HalfDuplex extends AppCompatActivity {
                 // 解析响应内容
                 JSONObject object = new JSONObject(msg);
 
+                // 每次循环，首先判断需不需要发送短码报文
+                // 停止等待后，开始响应短码报文
+                if (isStopWaiting){
+                    isStopWaiting = false;
+                    isFirstPkg = false;
+                    emptyShortCodeTime = 0;
+                    // 播放音频
+                    playAudio2 = true;
+
+                    // 统计未校验的报文
+                    List<String> uncheckedPkgIds = new ArrayList<>();
+                    for (int i = 0; i < shortCrcListForRec.size(); i++){
+                        if (!shortCodeTextMap.containsKey(String.valueOf(i))){
+                            uncheckedPkgIds.add(String.valueOf(i));
+                        }
+                    }
+
+                    System.out.println("uncheckedPkgIds:" + uncheckedPkgIds);
+
+                    if (uncheckedPkgIds.isEmpty()){
+                        // 构造返回内容
+                        recv_content2 = "RRR " + lastSrcDeviceId + " "
+                                + "DE " + myDeviceId + " "
+                                + "OK "
+                                + "9801 "
+                                + "READY "
+                                + "KKK";
+                        // 拿到所有报文
+                        StringBuilder sb = new StringBuilder();
+                        for (int i = 0; i < shortCodeTextMap.size(); i++){
+                            String shortCodeText = shortCodeTextMap.get(String.valueOf(i));
+                            List<String> shortCodes = MessageUtils.getNoTrimCode(shortCodeText);
+                            for (int j = 2; j < shortCodes.size(); j++){
+                                sb.append(shortCodes.get(j)).append(" ");
+                            }
+                        }
+                        refreshLogView("[7]报文全部接收完毕，内容：" + "\n" + sb.toString().trim());
+                        refreshLogView("\n");
+
+                    } else {
+                        StringBuilder idBuilder = new StringBuilder();
+                        for (String id : uncheckedPkgIds){
+                            // 更新未校验短码报文中的最后一个包ID
+                            lastOnePkgId = Integer.parseInt(id);
+                            idBuilder.append(id).append(" ");
+                        }
+                        // 构造返回内容
+                        recv_content2 = "RRR " + lastSrcDeviceId + " "
+                                + "DE " + myDeviceId + " "
+                                + idBuilder
+                                + "9801 "
+                                + "READY "
+                                + "KKK";
+
+                        refreshLogView("[7]报文未接收完毕，准备接收剩余短码报文！");
+                        refreshLogView("\n");
+                    }
+
+                    refreshLogView("[8]短码响应内容：" + "\n" + recv_content2);
+                    refreshLogView("\n");
+
+                    recv_content2 = addPreamble(recv_content2, preambleNum);
+                    System.out.println("短码响应报文:" + recv_content2);
+                    // 短码译码
+                    morseStr2 = morseLongCoder.encode(recv_content2);
+                    // 接收状态重置
+                    recIsLongCode = false;
+                    System.out.println("准备发送响应应答！");
+
+                    return;
+                }
 
                 if (playAudio1 || playAudio2) {
                     // 发送长码1
@@ -1532,13 +1671,40 @@ public class HalfDuplex extends AppCompatActivity {
                 }
                 else {
                     // 匹配到短码，准备发送内容
-                    if (!Objects.isNull(mode) && mode.equals(HalfDuplexMode.RECEIVE_SHORT_CODE) &&
-                            object.has("content") && object.getJSONArray("content").length() != 0) {
+                    if (object.has("content") && object.getJSONArray("content").length() != 0) {
                         content = object.getJSONArray("content").toString();
+
                         if (content.contains("+++")) {
                             JSONArray contentArr;
                             String crcContent = "";
                             String checkedCrcCode;
+
+                            // 第一包短码开始计时
+                            if (!isFirstPkg){
+                                isFirstPkg = true;
+                                // 匹配到短码后，开启计时线程
+                                waitShortCodeTime = computeShortCodeWaitTime(shortCodeWpm, shortCodePkgNum, shortCodeGroupNum - shortCodeGLen);
+                                waitShortCodeTime += 8;
+                                new Thread(){
+                                    @Override
+                                    public void run() {
+                                        try {
+                                            System.out.println("等待短码报文，预计：" + waitShortCodeTime + "秒！");
+                                            Thread.sleep(waitShortCodeTime * 1000);
+                                            if (!isEarlyStop && !isStopWaiting){
+                                                isStopWaiting = true;
+                                                isEarlyStop = false;
+                                                System.out.println("等待时间已足够！");
+                                            } else {
+                                                isEarlyStop = false;
+                                                isStopWaiting = false;
+                                            }
+                                        } catch (InterruptedException e) {
+                                        }
+                                    }
+                                }.start();
+                            }
+
                             try {
                                 emptyShortCodeTime = 0;
                                 contentArr = object.getJSONArray("content");
@@ -1565,9 +1731,18 @@ public class HalfDuplex extends AppCompatActivity {
                                 if (checkedCrcCode.equals(shortCrcListForRec.get(Integer.parseInt(id)))){
                                     shortCodeTextMap.put(id, tempShortText.toString().trim());
                                     shortCodeContentForDisplay.append(content).append("\n");
+
+                                    // 如果是最后一包，提前停止等待接收
+                                    if (lastOnePkgId == Integer.parseInt(id)){
+                                        isEarlyStop = true;
+                                        isStopWaiting = true;
+                                        System.out.println("接收到最后一包，不再等待其他内容！");
+                                    } else {
+                                        isStopWaiting = false;
+                                    }
                                     System.out.println("报文" + id + "：校验成功！");
                                     System.out.println("tempShortText: " + tempShortText.toString().trim());
-                                    refreshLogView("[7]短码报文CRC校验成功，短码报文内容：" + content);
+                                    refreshLogView("[7]短码报文CRC校验成功，短码报文内容：" + "\n" + content);
                                     refreshLogView("\n");
                                 } else {
                                     System.out.println("报文" + id + "：校验失败！");
@@ -1597,7 +1772,8 @@ public class HalfDuplex extends AppCompatActivity {
                                 System.out.println("设备号匹配");
                                 // 新连接产生后，旧信息直接丢弃
                                 shortCodeTextMap.clear();
-
+                                isStopWaiting = false;
+                                isFirstPkg = false;
                                 String validContent;
                                 String containsShortCodeCrc;
                                 String cmpLongCrc;
@@ -1623,6 +1799,16 @@ public class HalfDuplex extends AppCompatActivity {
                                     for (int i = 8; i < noTrimCode.size() - 1; i++){
                                         shortCrcListForRec.add(noTrimCode.get(i));
                                     }
+
+                                    // 更新应接收的短码总包数
+                                    shortCodePkgNum = Integer.parseInt(noTrimCode.get(6));
+                                    shortCodeGroupNum = Integer.parseInt(noTrimCode.get(5));
+                                    shortCodeGLen = Integer.parseInt(noTrimCode.get(4));
+                                    System.out.println("拿到长码中的短码包数：" + shortCodePkgNum);
+                                    System.out.println("拿到长码中的短码组数：" + shortCodeGroupNum);
+                                    System.out.println("拿到长码中的短码包最大长度：" + shortCodeGLen);
+
+                                    lastOnePkgId = shortCrcListForRec.size() - 1;
                                     longCrcCode = StringUtils.getLongCrc(content);
                                 } catch (Exception e) {
                                     return;
@@ -1632,13 +1818,17 @@ public class HalfDuplex extends AppCompatActivity {
                                 System.out.println("接收到长码，longCrcCode: " + longCrcCode);
                                 System.out.println("接收到长码，cmpLongCrc: " + cmpLongCrc);
                                 // 长码CRC校验
+
+
+                                refreshLogView("<==================>");
+                                refreshLogView("\n");
                                 if (cmpLongCrc.equals(longCrcCode)) {
                                     // 播放音频
                                     playAudio1 = true;
                                     // 构造返回内容
-                                    recv_content1 = "R R R " + lastSrcDeviceId + " "
+                                    recv_content1 = "RRR " + lastSrcDeviceId + " "
                                             + "DE " + myDeviceId + " "
-                                            + "Ready K K K";
+                                            + "READY KKK";
                                     recv_content1 = addPreamble(recv_content1, preambleNum);
                                     System.out.println("长码响应报文:" + recv_content1);
 
@@ -1646,7 +1836,7 @@ public class HalfDuplex extends AppCompatActivity {
                                     morseStr1 = morseLongCoder.encode(recv_content1);
                                     // 接收到长码
                                     recIsLongCode = true;
-                                    refreshLogView("[5]接收到连接报文，内容：" + content);
+                                    refreshLogView("[5]接收到连接报文，内容：" + "\n" + content);
                                     refreshLogView("\n");
                                     refreshLogView("[5]连接报文CRC校验成功！");
                                     refreshLogView("\n");
@@ -1655,7 +1845,7 @@ public class HalfDuplex extends AppCompatActivity {
                                     // 切换到接收短码模式
                                     mode = HalfDuplexMode.RECEIVE_SHORT_CODE;
                                 } else {
-                                    refreshLogView("[5]接收到连接报文，内容：" + content);
+                                    refreshLogView("[5]接收到连接报文，内容：" + "\n" + content);
                                     refreshLogView("\n");
                                     refreshLogView("[5]连接报文CRC校验失败！");
                                     refreshLogView("\n");
@@ -1664,78 +1854,8 @@ public class HalfDuplex extends AppCompatActivity {
                             }
                         }
                     }
-                    else if (!Objects.isNull(mode) && mode.equals(HalfDuplexMode.RECEIVE_SHORT_CODE)){
-                        if (emptyShortCodeTime <= maxEmptyShortCodeTime) {
-                            emptyShortCodeTime++;
-                        } else {
-                            mode = HalfDuplexMode.SEND_SHORT_CODE_RESPONSE;
-                            emptyShortCodeTime = 0;
-                            // 播放音频
-                            playAudio2 = true;
 
-                            // 统计未校验的报文
-                            List<String> uncheckedPkgIds = new ArrayList<>();
-                            for (int i = 0; i < shortCrcListForRec.size(); i++){
-                                if (!shortCodeTextMap.containsKey(String.valueOf(i))){
-                                    uncheckedPkgIds.add(String.valueOf(i));
-                                }
-                            }
-
-                            System.out.println("uncheckedPkgIds:" + uncheckedPkgIds);
-
-                            if (uncheckedPkgIds.isEmpty()){
-                                // 构造返回内容
-                                recv_content2 = "R R R " + lastSrcDeviceId + " "
-                                        + "DE " + myDeviceId + " "
-                                        + "OK "
-                                        + "9801 "
-                                        + "Ready "
-                                        + "K K K";
-                                // 拿到所有报文
-                                StringBuilder sb = new StringBuilder();
-                                for (int i = 0; i < shortCodeTextMap.size(); i++){
-                                    String shortCodeText = shortCodeTextMap.get(String.valueOf(i));
-                                    List<String> shortCodes = MessageUtils.getNoTrimCode(shortCodeText);
-                                    for (int j = 2; j < shortCodes.size(); j++){
-                                        sb.append(shortCodes.get(j)).append(" ");
-                                    }
-                                }
-                                refreshLogView("[7]报文全部接收完毕，内容：" + sb.toString().trim());
-                                refreshLogView("\n");
-                            } else {
-                                StringBuilder idBuilder = new StringBuilder();
-                                for (String id : uncheckedPkgIds){
-                                    idBuilder.append(id).append(" ");
-                                }
-                                // 构造返回内容
-                                recv_content2 = "R R R " + lastSrcDeviceId + " "
-                                        + "DE " + myDeviceId + " "
-                                        + idBuilder.toString()
-                                        + "9801 "
-                                        + "Ready "
-                                        + "K K K";
-                            }
-                            recv_content2 = addPreamble(recv_content2, preambleNum);
-                            System.out.println("短码响应报文:" + recv_content2);
-                            // 短码译码
-                            morseStr2 = morseLongCoder.encode(recv_content2);
-                            // 接收状态重置
-                            recIsLongCode = false;
-
-
-//                            refreshLogView("[7]接收到短码报文，内容:" + shortCodeContentForDisplay.delete(shortCodeContentForDisplay.length() -1, shortCodeContentForDisplay.length()));
-//                            refreshLogView("\n");
-//                            refreshLogView("[7]短码报文CRC校验成功！");
-//                            refreshLogView("\n");
-                            System.out.println("准备发送响应应答！");
-
-//                            shortCodeContentForDisplay.delete(0, shortCodeContentForDisplay.length());
-                        }
-                    }
                 }
-
-
-
             } catch (Exception e) {
                 // 网络请求异常处理
                 e.printStackTrace();
@@ -2288,5 +2408,15 @@ public class HalfDuplex extends AppCompatActivity {
         }
         sb.append(str);
         return sb.toString();
+    }
+
+    /**
+     * 用于收端计算等待短码报文的最大时间
+     * @param wpm
+     * @param shortCodeGroupNum
+     * @return
+     */
+    private int computeShortCodeWaitTime(int wpm, int shortCodePkgNum, int shortCodeGroupNum){
+        return (4 * shortCodePkgNum + shortCodeGroupNum) * 60 / wpm + (shortCodePkgNum - 1) * 6;
     }
 }

@@ -131,14 +131,12 @@ public class UploadShortUtils extends Thread{
             code=httpURLConnection.getResponseCode();
 
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } finally {
             if (ds != null) {
                 try {
                     ds.close();
                 } catch (IOException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
             }
@@ -146,7 +144,6 @@ public class UploadShortUtils extends Thread{
                 try {
                     reader.close();
                 } catch (IOException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
             }
@@ -154,7 +151,6 @@ public class UploadShortUtils extends Thread{
                 try {
                     inputStreamReader.close();
                 } catch (IOException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
             }
@@ -162,7 +158,6 @@ public class UploadShortUtils extends Thread{
                 try {
                     inputStream.close();
                 } catch (IOException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
             }
