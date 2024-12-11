@@ -156,6 +156,7 @@
             android:gravity="start"
             android:longClickable="true"
             android:scrollbars="vertical"
+            android:singleLine="false"
             android:text=""
             android:textColor="@color/text_color"
             android:textSize="14sp"
@@ -345,6 +346,18 @@
             app:layout_constraintWidth_percent="0.5"
             app:layout_constraintTop_toBottomOf="@+id/snr"
             tools:ignore="TouchTargetSizeCheck" />
+
+<!--        <Button-->
+<!--            android:id="@+id/restart"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="0dp"-->
+<!--            android:text="@string/restrat"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintHeight_percent="0.04"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintWidth_percent="0.5"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/snr"-->
+<!--            tools:ignore="TouchTargetSizeCheck" />-->
 
 
         <Button

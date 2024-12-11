@@ -89,8 +89,6 @@ public class HalfDuplex extends AppCompatActivity {
     public static EditText longCodeGNumInput = null;
     public static EditText longCodeSpeedInput = null;
     public static EditText longCodeLevel = null;
-    public static EditText longCodeMMDD = null;
-    public static EditText longCodeHHMM = null;
     public static EditText longCodeOther = null;
     public static EditText maxGLenInput = null;
 
@@ -578,7 +576,7 @@ public class HalfDuplex extends AppCompatActivity {
                             sendShortMorseCode(str, wpm);
                             if (!lastOne){
                                 try {
-                                    Thread.sleep(6000);
+                                    Thread.sleep(8000);
                                 } catch (InterruptedException e) {
                                     e.printStackTrace();
                                 }
@@ -650,7 +648,7 @@ public class HalfDuplex extends AppCompatActivity {
                             sendShortMorseCode(str, wpm);
                             if (!lastOne){
                                 try {
-                                    Thread.sleep(6000);
+                                    Thread.sleep(8000);
                                 } catch (InterruptedException e) {
                                     e.printStackTrace();
                                 }
@@ -718,7 +716,7 @@ public class HalfDuplex extends AppCompatActivity {
                             sendShortMorseCode(str, wpm);
                             if (!lastOne){
                                 try {
-                                    Thread.sleep(6000);
+                                    Thread.sleep(8000);
                                 } catch (InterruptedException e) {
                                     e.printStackTrace();
                                 }
@@ -1733,7 +1731,7 @@ public class HalfDuplex extends AppCompatActivity {
                                 // 匹配到短码后，开启计时线程
                                 waitShortCodeTime = computeShortCodeWaitTime(shortCodeWpm, shortCodePkgNum, shortCodeGroupNum - shortCodeGLen);
 
-                                if (waitShortCodeTime == 0){
+                                if (waitShortCodeTime != 0){
                                     waitShortCodeTime += 8;
                                     new Thread(){
                                         @Override
@@ -1779,8 +1777,8 @@ public class HalfDuplex extends AppCompatActivity {
                                     }
                                     System.out.println("报文" + id + "：校验成功！");
                                     System.out.println("tempShortText: " + tempShortText.toString().trim());
-                                    refreshLogView("[7]短码报文CRC校验成功，短码报文内容：" + "" + content);
-                                    System.out.println("[7]短码报文CRC校验成功，短码报文内容：" + "\n" + content);
+                                    refreshLogView("[7]短码报文校验成功，短码报文内容：" + "" + content);
+                                    System.out.println("[7]短码报文校验成功，短码报文内容：" + "\n" + content);
                                     refreshLogView("\n");
                                 } else {
                                     System.out.println("报文" + id + "：校验失败！");
@@ -1878,7 +1876,7 @@ public class HalfDuplex extends AppCompatActivity {
                                     recIsLongCode = true;
                                     refreshLogView("[5]接收到连接报文，内容：" + "\n" + content);
                                     refreshLogView("\n");
-                                    refreshLogView("[5]连接报文CRC校验成功！");
+                                    refreshLogView("[5]连接报文校验成功！");
                                     refreshLogView("\n");
 
                                     System.out.println("准备发送连接应答！");
@@ -1887,7 +1885,7 @@ public class HalfDuplex extends AppCompatActivity {
                                 } else {
                                     refreshLogView("[5]接收到连接报文，内容：" + "\n" + content);
                                     refreshLogView("\n");
-                                    refreshLogView("[5]连接报文CRC校验失败！");
+                                    refreshLogView("[5]连接报文校验失败！");
                                     refreshLogView("\n");
                                     return ;
                                 }
@@ -2460,7 +2458,7 @@ public class HalfDuplex extends AppCompatActivity {
         if (shortCodePkgNum == 0){
             return 0;
         }
-        return (4 * shortCodePkgNum + shortCodeGroupNum) * 60 / wpm + (shortCodePkgNum - 1) * 6;
+        return (4 * shortCodePkgNum + shortCodeGroupNum) * 60 / wpm + (shortCodePkgNum - 1) * 8;
     }
 
     private Integer generateCommunicationId(Integer id){
