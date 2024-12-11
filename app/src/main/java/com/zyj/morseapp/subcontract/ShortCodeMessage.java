@@ -16,16 +16,21 @@ public class ShortCodeMessage {
     // 短码报文内容
     private String shortCodeContent;
 
-    public ShortCodeMessage(String gid, String gLen, String shortCodeContent){
+    // 本次通信ID
+    private int communicationId;
+
+    public ShortCodeMessage(String gid, String gLen, String shortCodeContent, int communicationId){
         this.gid = gid;
         this.gLen = gLen;
         this.shortCodeContent = shortCodeContent;
+        this.communicationId = communicationId;
     }
 
     // 获取短码正文
     public String getShortCodeText(){
         String shortCodeText =
-                gid + " "
+                communicationId + " "
+                + gid + " "
                 + gLen + " "
                 + shortCodeContent;
 
@@ -35,6 +40,7 @@ public class ShortCodeMessage {
     // 获取短码报文
     public String getShortCodeMessage(){
         String shortCodeMessage = head + " "
+                + communicationId + " "
                 + gid + " "
                 + gLen + " "
                 + shortCodeContent + " "

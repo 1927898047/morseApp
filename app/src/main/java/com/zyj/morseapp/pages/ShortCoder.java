@@ -60,6 +60,8 @@ public class ShortCoder extends AppCompatActivity {
     // 是否在播放PTT的同时播放音频
     private boolean isPlayAudio;
 
+    //初始化mediaPlayer
+    MediaPlayer mediaPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,6 +112,9 @@ public class ShortCoder extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        //初始化mediaPlayer
+        mediaPlayer = new MediaPlayer();
     }
 
 
@@ -252,14 +257,20 @@ public class ShortCoder extends AppCompatActivity {
                             new Thread(){
                                 @Override
                                 public void run() {
-                                    //初始化mediaPlayer
-                                    MediaPlayer mediaPlayer=new MediaPlayer();
+
                                     try {
                                         mediaPlayer.setDataSource(Path_WAV);
                                         mediaPlayer.prepare();
                                         mediaPlayer.setLooping(false);  // 设置非循环播放
                                         //开始播放
                                         mediaPlayer.start();
+                                        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                            @Override
+                                            public void onCompletion(MediaPlayer mp) {
+                                                // 音乐播放完成，进行轮询阻塞
+                                                mediaPlayer.reset();
+                                            }
+                                        });
                                     } catch (IOException e) {
                                         e.printStackTrace();
                                     }

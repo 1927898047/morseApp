@@ -177,7 +177,10 @@ public class HalfDuplex extends AppCompatActivity {
     // 长码内容
     String longCodeMessageContent;
     String longMorseContent;
-
+    // 发端通信ID
+    Integer communicationIdForSend = 0;
+    // 发端通信ID持久化
+    private String communicationIdForSendTxtPath = context.getExternalFilesDir("").getAbsolutePath()+"/communicationIdForSend.txt";
 
 
     ////接收
@@ -208,6 +211,10 @@ public class HalfDuplex extends AppCompatActivity {
     int waitShortCodeTime;
     // 短码报文中的最后一包ID
     int lastOnePkgId;
+    // 发端通信ID
+    Integer communicationIdForRec = 0;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -342,6 +349,9 @@ public class HalfDuplex extends AppCompatActivity {
         try {
             if(!FileUtils.fileExist(isSaveWavPath)){
                 FileUtils.writeTxt(isSaveWavPath, "1");
+            }
+            if(!FileUtils.fileExist(communicationIdForSendTxtPath)){
+                FileUtils.writeTxt(communicationIdForSendTxtPath, String.valueOf(communicationIdForSend));
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -1293,6 +1303,17 @@ public class HalfDuplex extends AppCompatActivity {
             switch (view.getId()) {
                 // 发送
                 case R.id.send_button:
+
+                    // 拿到上次的通信ID
+                    try {
+                        communicationIdForSend = Integer.valueOf(FileUtils.readTxt(communicationIdForSendTxtPath));
+                        communicationIdForSend = generateCommunicationId(communicationIdForSend);
+                        FileUtils.writeTxt(communicationIdForSendTxtPath, String.valueOf(communicationIdForSend));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+
                     String preambleNumTxt = context.getExternalFilesDir("").getAbsolutePath()+"/preambleNum.txt";
                     try {
                         preambleNum = Integer.valueOf(FileUtils.readTxt(preambleNumTxt));
@@ -1344,7 +1365,9 @@ public class HalfDuplex extends AppCompatActivity {
                     shortCodeMessageContentCacheForSend = new ArrayList<>();
                     shortMorseCacheForSend = new ArrayList<>();
                     for (int i = 0; i < shortCodeGroup.size(); i++){
-                        ShortCodeMessage shortCodeMessage = new ShortCodeMessage(String.valueOf(i), String.valueOf(MessageUtils.getNoTrimCode(shortCodeGroup.get(i)).size()), shortCodeGroup.get(i));
+                        ShortCodeMessage shortCodeMessage = new ShortCodeMessage(String.valueOf(i),
+                                String.valueOf(MessageUtils.getNoTrimCode(shortCodeGroup.get(i)).size()),
+                                shortCodeGroup.get(i), communicationIdForSend);
                         shortCodeCrcList.add(MessageUtils.getCRC16(shortCodeMessage.getShortCodeText()));
                         shortCodeMessageCacheForSend.add(shortCodeMessage);
                         String shortCodeMessageContent = shortCodeMessage.getShortCodeMessage();
@@ -1356,7 +1379,7 @@ public class HalfDuplex extends AppCompatActivity {
                     Arrays.fill(shortMorseCheckFlag, 1);
                     // 构建长码报文
                     longCodeMessage = new LongCodeMessage(myDeviceId, destDeviceId, String.valueOf(maxGLen), String.valueOf(gLenSum),
-                            String.valueOf(shortCodeMessageCacheForSend.size()), shortCodeCrcList, shortCodeWpm);
+                            String.valueOf(shortCodeMessageCacheForSend.size()), shortCodeCrcList, shortCodeWpm, communicationIdForSend);
                     longCodeMessageContent = longCodeMessage.getLongCodeMessage();
                     longMorseContent = morseLongCoder.encode(longCodeMessageContent);
 
@@ -1559,12 +1582,17 @@ public class HalfDuplex extends AppCompatActivity {
                         }
                     }
 
+                    // 更新剩余的包数、组数
+                    shortCodePkgNum = uncheckedPkgIds.size();
+                    shortCodeGroupNum = uncheckedPkgIds.size() * shortCodeGLen;
+
                     System.out.println("uncheckedPkgIds:" + uncheckedPkgIds);
 
                     if (uncheckedPkgIds.isEmpty()){
                         // 构造返回内容
                         recv_content2 = "RRR " + lastSrcDeviceId + " "
                                 + "DE " + myDeviceId + " "
+                                + communicationIdForRec + " "
                                 + "OK "
                                 + "9801 "
                                 + "READY "
@@ -1574,7 +1602,7 @@ public class HalfDuplex extends AppCompatActivity {
                         for (int i = 0; i < shortCodeTextMap.size(); i++){
                             String shortCodeText = shortCodeTextMap.get(String.valueOf(i));
                             List<String> shortCodes = MessageUtils.getNoTrimCode(shortCodeText);
-                            for (int j = 2; j < shortCodes.size(); j++){
+                            for (int j = 3; j < shortCodes.size(); j++){
                                 sb.append(shortCodes.get(j)).append(" ");
                             }
                         }
@@ -1591,6 +1619,7 @@ public class HalfDuplex extends AppCompatActivity {
                         // 构造返回内容
                         recv_content2 = "RRR " + lastSrcDeviceId + " "
                                 + "DE " + myDeviceId + " "
+                                + communicationIdForRec + " "
                                 + idBuilder
                                 + "9801 "
                                 + "READY "
@@ -1679,55 +1708,63 @@ public class HalfDuplex extends AppCompatActivity {
                             String crcContent = "";
                             String checkedCrcCode;
 
+                            contentArr = object.getJSONArray("content");
+                            crcContent = "";
+                            for (int i = 0; i < contentArr.length(); i++) {
+                                if (contentArr.get(i).toString().contains("+") || contentArr.get(i).toString().contains("=")) {
+                                    continue;
+                                } else {
+                                    crcContent = crcContent + contentArr.get(i).toString() + " ";
+                                }
+                            }
+                            crcContent = crcContent.trim();
+
+                            // 拿到一包报文
+                            List<String> shortCodes = MessageUtils.getNoTrimCode(crcContent);
+                            StringBuilder tempShortText = new StringBuilder();
+                            String id = shortCodes.get(1).trim();
+                            int tempCommunicationID = Integer.parseInt(shortCodes.get(0).trim());
+                            if (tempCommunicationID != communicationIdForRec){
+                                return;
+                            }
                             // 第一包短码开始计时
                             if (!isFirstPkg){
                                 isFirstPkg = true;
                                 // 匹配到短码后，开启计时线程
                                 waitShortCodeTime = computeShortCodeWaitTime(shortCodeWpm, shortCodePkgNum, shortCodeGroupNum - shortCodeGLen);
-                                waitShortCodeTime += 8;
-                                new Thread(){
-                                    @Override
-                                    public void run() {
-                                        try {
-                                            System.out.println("等待短码报文，预计：" + waitShortCodeTime + "秒！");
-                                            Thread.sleep(waitShortCodeTime * 1000);
-                                            if (!isEarlyStop && !isStopWaiting){
-                                                isStopWaiting = true;
-                                                isEarlyStop = false;
-                                                System.out.println("等待时间已足够！");
-                                            } else {
-                                                isEarlyStop = false;
-                                                isStopWaiting = false;
+
+                                if (waitShortCodeTime == 0){
+                                    waitShortCodeTime += 8;
+                                    new Thread(){
+                                        @Override
+                                        public void run() {
+                                            try {
+                                                System.out.println("等待短码报文，预计：" + waitShortCodeTime + "秒！");
+                                                Thread.sleep(waitShortCodeTime * 1000);
+                                                if (!isEarlyStop && !isStopWaiting){
+                                                    isStopWaiting = true;
+                                                    isEarlyStop = false;
+                                                    System.out.println("等待时间已足够！");
+                                                } else {
+                                                    isEarlyStop = false;
+                                                    isStopWaiting = false;
+                                                }
+                                            } catch (InterruptedException e) {
                                             }
-                                        } catch (InterruptedException e) {
                                         }
-                                    }
-                                }.start();
+                                    }.start();
+                                }
                             }
 
                             try {
                                 emptyShortCodeTime = 0;
-                                contentArr = object.getJSONArray("content");
-                                crcContent = "";
-                                for (int i = 0; i < contentArr.length(); i++) {
-                                    if (contentArr.get(i).toString().contains("+") || contentArr.get(i).toString().contains("=")) {
-                                        continue;
-                                    } else {
-                                        crcContent = crcContent + contentArr.get(i).toString() + " ";
-                                    }
-                                }
-                                crcContent = crcContent.trim();
 
-                                // 拿到一包报文
-                                List<String> shortCodes = MessageUtils.getNoTrimCode(crcContent);
-                                StringBuilder tempShortText = new StringBuilder();
-                                String id = shortCodes.get(0).trim();
                                 for (int i = 0; i < shortCodes.size(); i++){
                                     tempShortText = tempShortText.append(shortCodes.get(i)).append(" ");
                                 }
                                 crcContent = tempShortText.toString().trim();
                                 checkedCrcCode = MessageUtils.getCRC16(crcContent);
-                                // 该包报文crc和长码中相的的crc一致
+                                // 通信ID一致 && 该包报文crc和长码中相的的crc一致
                                 if (checkedCrcCode.equals(shortCrcListForRec.get(Integer.parseInt(id)))){
                                     shortCodeTextMap.put(id, tempShortText.toString().trim());
                                     shortCodeContentForDisplay.append(content).append("\n");
@@ -1742,7 +1779,8 @@ public class HalfDuplex extends AppCompatActivity {
                                     }
                                     System.out.println("报文" + id + "：校验成功！");
                                     System.out.println("tempShortText: " + tempShortText.toString().trim());
-                                    refreshLogView("[7]短码报文CRC校验成功，短码报文内容：" + "\n" + content);
+                                    refreshLogView("[7]短码报文CRC校验成功，短码报文内容：" + "" + content);
+                                    System.out.println("[7]短码报文CRC校验成功，短码报文内容：" + "\n" + content);
                                     refreshLogView("\n");
                                 } else {
                                     System.out.println("报文" + id + "：校验失败！");
@@ -1796,17 +1834,19 @@ public class HalfDuplex extends AppCompatActivity {
                                         shortCodeWpmInLongCode = 35;
                                         System.out.println("未拿到长码中的短码码速，默认：" + String.valueOf(shortCodeWpmInLongCode) + "wpm");
                                     }
-                                    for (int i = 8; i < noTrimCode.size() - 1; i++){
+                                    for (int i = 9; i < noTrimCode.size() - 1; i++){
                                         shortCrcListForRec.add(noTrimCode.get(i));
                                     }
 
                                     // 更新应接收的短码总包数
+                                    communicationIdForRec = Integer.parseInt(noTrimCode.get(8));
                                     shortCodePkgNum = Integer.parseInt(noTrimCode.get(6));
                                     shortCodeGroupNum = Integer.parseInt(noTrimCode.get(5));
                                     shortCodeGLen = Integer.parseInt(noTrimCode.get(4));
                                     System.out.println("拿到长码中的短码包数：" + shortCodePkgNum);
                                     System.out.println("拿到长码中的短码组数：" + shortCodeGroupNum);
                                     System.out.println("拿到长码中的短码包最大长度：" + shortCodeGLen);
+                                    System.out.println("拿到长码中的通信ID：" + communicationIdForRec);
 
                                     lastOnePkgId = shortCrcListForRec.size() - 1;
                                     longCrcCode = StringUtils.getLongCrc(content);
@@ -2417,6 +2457,17 @@ public class HalfDuplex extends AppCompatActivity {
      * @return
      */
     private int computeShortCodeWaitTime(int wpm, int shortCodePkgNum, int shortCodeGroupNum){
+        if (shortCodePkgNum == 0){
+            return 0;
+        }
         return (4 * shortCodePkgNum + shortCodeGroupNum) * 60 / wpm + (shortCodePkgNum - 1) * 6;
+    }
+
+    private Integer generateCommunicationId(Integer id){
+        if (id == 999){
+            return 0;
+        } else {
+            return id+1;
+        }
     }
 }

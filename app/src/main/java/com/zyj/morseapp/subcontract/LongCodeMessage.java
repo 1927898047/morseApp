@@ -29,9 +29,11 @@ public class LongCodeMessage {
     // 短码报文码速
     private int shortCodeWpm;
 
+    // 通信ID
+    private int communicationId;
 
     public LongCodeMessage(String senderId, String receiverId, String gLen, String gLenSum,
-                           String groupNum, List<String> shortCrcList, int shortCodeWpm){
+                           String groupNum, List<String> shortCrcList, int shortCodeWpm, int communicationId){
         this.senderId = senderId;
         this.receiverId = receiverId;
         this.gLen = gLen;
@@ -39,6 +41,7 @@ public class LongCodeMessage {
         this.groupNum = groupNum;
         this.shortCrcList = shortCrcList;
         this.shortCodeWpm = shortCodeWpm;
+        this.communicationId = communicationId;
     }
 
 
@@ -51,7 +54,8 @@ public class LongCodeMessage {
                 + gLen + " "
                 + gLenSum + " "
                 + groupNum + " "
-                + shortCodeWpm + " ";
+                + shortCodeWpm + " "
+                + communicationId + " ";
 
         for (String str : shortCrcList){
             longCodeMessage = longCodeMessage + str + " ";
@@ -64,7 +68,8 @@ public class LongCodeMessage {
                 + gLen + " "
                 + gLenSum + " "
                 + groupNum + " "
-                + shortCodeWpm + " ";
+                + shortCodeWpm + " "
+                + communicationId + " ";
         for (String str : shortCrcList){
             temp = temp + str + " ";
         }

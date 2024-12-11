@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Looper;
 import android.text.method.ScrollingMovementMethod;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -39,7 +40,7 @@ public class Sockets extends AppCompatActivity {
     private static Button send_longWave=null;
 
     private Context context=null;
-    public static String port = "80";
+    public static String port = "5000";
     public static String ip = "127.0.0.1";
     public static String deviceId="1";
     public static Integer expiredTime = 40;
@@ -148,6 +149,23 @@ public class Sockets extends AppCompatActivity {
         isPlayAudioButton.setChecked(isPlayAudio);
         isSelfAdaptionWpmButton.setChecked(isSelfAdaptionWpm);
         et_preamble_num.setText(preambleNum.toString());
+
+        output_text.setMovementMethod(ScrollingMovementMethod.getInstance());
+        output_text.setMaxLines(Integer.MAX_VALUE); // 设置足够大的行数以容纳所有文本
+        output_text.setScrollContainer(true);
+        output_text.setFocusable(true);
+        output_text.setSelected(true);
+
+        // 避免父布局拦截滑动事件
+        output_text.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_MOVE) {
+                    view.getParent().requestDisallowInterceptTouchEvent(true);
+                }
+                return false;
+            }
+        });
     }
 
     public static void show(String str) {

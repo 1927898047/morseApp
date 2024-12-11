@@ -52,6 +52,7 @@ public class LongCoder extends AppCompatActivity {
     // 是否在播放PTT的同时播放音频
     private boolean isPlayAudio;
 
+    MediaPlayer mediaPlayer;
 
     Intent intent=null;
 
@@ -100,7 +101,7 @@ public class LongCoder extends AppCompatActivity {
         button_switch_record.setOnClickListener(myOnClick);
         context= MyApplication.getContext();
 
-
+        mediaPlayer = new MediaPlayer();
     }
 
     /**
@@ -241,14 +242,19 @@ public class LongCoder extends AppCompatActivity {
                             new Thread(){
                                 @Override
                                 public void run() {
-                                    //初始化mediaPlayer
-                                    MediaPlayer mediaPlayer=new MediaPlayer();
                                     try {
                                         mediaPlayer.setDataSource(Path_WAV);
                                         mediaPlayer.prepare();
                                         mediaPlayer.setLooping(false);  // 设置非循环播放
                                         //开始播放
                                         mediaPlayer.start();
+                                        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                            @Override
+                                            public void onCompletion(MediaPlayer mp) {
+                                                // 音乐播放完成，进行轮询阻塞
+                                                mediaPlayer.reset();
+                                            }
+                                        });
                                     } catch (IOException e) {
                                         e.printStackTrace();
                                     }
