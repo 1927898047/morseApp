@@ -136,7 +136,7 @@ public class MessageUtils {
 
         try {
             List<String> noTrimCode = getNoTrimCode(input.substring(startIndex, endIndex));
-            for (int i = 2; i < noTrimCode.size() - 1; i++){
+            for (int i = 3; i < noTrimCode.size() - 1; i++){
                 resultList.add(noTrimCode.get(i));
             }
         } catch (Exception e){

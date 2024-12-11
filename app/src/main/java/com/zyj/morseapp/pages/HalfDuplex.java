@@ -578,7 +578,7 @@ public class HalfDuplex extends AppCompatActivity {
                             sendShortMorseCode(str, wpm);
                             if (!lastOne){
                                 try {
-                                    Thread.sleep(6000);
+                                    Thread.sleep(8000);
                                 } catch (InterruptedException e) {
                                     e.printStackTrace();
                                 }
@@ -650,7 +650,7 @@ public class HalfDuplex extends AppCompatActivity {
                             sendShortMorseCode(str, wpm);
                             if (!lastOne){
                                 try {
-                                    Thread.sleep(6000);
+                                    Thread.sleep(8000);
                                 } catch (InterruptedException e) {
                                     e.printStackTrace();
                                 }
@@ -718,7 +718,7 @@ public class HalfDuplex extends AppCompatActivity {
                             sendShortMorseCode(str, wpm);
                             if (!lastOne){
                                 try {
-                                    Thread.sleep(6000);
+                                    Thread.sleep(8000);
                                 } catch (InterruptedException e) {
                                     e.printStackTrace();
                                 }
@@ -1733,7 +1733,7 @@ public class HalfDuplex extends AppCompatActivity {
                                 // 匹配到短码后，开启计时线程
                                 waitShortCodeTime = computeShortCodeWaitTime(shortCodeWpm, shortCodePkgNum, shortCodeGroupNum - shortCodeGLen);
 
-                                if (waitShortCodeTime == 0){
+                                if (waitShortCodeTime != 0){
                                     waitShortCodeTime += 8;
                                     new Thread(){
                                         @Override
@@ -2460,7 +2460,7 @@ public class HalfDuplex extends AppCompatActivity {
         if (shortCodePkgNum == 0){
             return 0;
         }
-        return (4 * shortCodePkgNum + shortCodeGroupNum) * 60 / wpm + (shortCodePkgNum - 1) * 6;
+        return (4 * shortCodePkgNum + shortCodeGroupNum) * 60 / wpm + (shortCodePkgNum - 1) * 8;
     }
 
     private Integer generateCommunicationId(Integer id){
