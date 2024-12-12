@@ -284,8 +284,8 @@ public class Sockets extends AppCompatActivity {
                             @Override
                             public void run() {
                                 if(PostUtils.code!=200) {
-                                    show("网络通信失败！");
-                                    System.out.println("网络通信失败");
+                                    show("后台通信失败！");
+                                    System.out.println("后台通信失败");
                                 }
                                 else if(PostUtils.code==200){
                                     JSONArray content;
@@ -358,7 +358,7 @@ public class Sockets extends AppCompatActivity {
                             @Override
                             public void run() {
                                 if(PostUtils.code!=200) {
-                                    show("网络通信失败！");
+                                    show("后台通信失败！");
                                 }
                                 else if(PostUtils.code==200){
                                     String talkContent;
