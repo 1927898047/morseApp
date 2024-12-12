@@ -20,7 +20,7 @@
     <string name="output8">码速(wpm)</string>
     <string name="shortCode_speed_input">请输入码速</string>
     <string name="send_button_text">开始通信</string>
-    <string name="suddenStrat">猝发通信</string>
+    <string name="suddenStrat">测试通信</string>
     <string name="half_duplex_button">半双工通信</string>
     <string name="input_text">请输入英文字符</string>
     <string name="audio_button">编码并播放音频</string>
