@@ -1068,7 +1068,12 @@ public class HalfDuplex extends AppCompatActivity {
                             System.out.println("收到短码报文响应，不完整的报文id：" + idListFromLongCodeRec2);
                             Arrays.fill(shortMorseCheckFlag, 0);
                             for (String id : idListFromLongCodeRec2){
-                                shortMorseCheckFlag[Integer.parseInt(id)] = 1;
+                                if (isNumeric(id)){
+                                    int index = Integer.parseInt(id);
+                                    if (index < shortMorseCheckFlag.length){
+                                        shortMorseCheckFlag[index] = 1;
+                                    }
+                                }
                             }
                             System.out.println("rec_content:" + rec_content);
                             refreshLogView("[4]收到短码报文响应，内容：" + "\n" + talkContent);
@@ -1166,7 +1171,12 @@ public class HalfDuplex extends AppCompatActivity {
                             System.out.println("收到短码报文响应，不完整的报文id：" + idListFromLongCodeRec2);
                             Arrays.fill(shortMorseCheckFlag, 0);
                             for (String id : idListFromLongCodeRec2){
-                                shortMorseCheckFlag[Integer.parseInt(id)] = 1;
+                                if (isNumeric(id)){
+                                    int index = Integer.parseInt(id);
+                                    if (index < shortMorseCheckFlag.length){
+                                        shortMorseCheckFlag[index] = 1;
+                                    }
+                                }
                             }
                             System.out.println("rec_content:" + rec_content);
                             refreshLogView("[4]收到短码报文响应，内容：" + "\n" + talkContent);
@@ -1261,7 +1271,12 @@ public class HalfDuplex extends AppCompatActivity {
                             System.out.println("收到短码报文响应，不完整的报文id：" + idListFromLongCodeRec2);
                             Arrays.fill(shortMorseCheckFlag, 0);
                             for (String id : idListFromLongCodeRec2){
-                                shortMorseCheckFlag[Integer.parseInt(id)] = 1;
+                                if (isNumeric(id)){
+                                    int index = Integer.parseInt(id);
+                                    if (index < shortMorseCheckFlag.length){
+                                        shortMorseCheckFlag[index] = 1;
+                                    }
+                                }
                             }
                             System.out.println("rec_content:" + rec_content);
                             refreshLogView("[4]收到短码报文响应，内容：" + "\n" + talkContent);
@@ -2936,5 +2951,22 @@ public class HalfDuplex extends AppCompatActivity {
         } else {
             return id+1;
         }
+    }
+
+    /**
+     * 判断字符串是否是数字
+     * @param str
+     * @return
+     */
+    private static boolean isNumeric(String str) {
+        if (str == null) {
+            return false;
+        }
+        for (int i = 0; i < str.length(); i++) {
+            if (!Character.isDigit(str.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
     }
 }
