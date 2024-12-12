@@ -346,17 +346,17 @@
             app:layout_constraintTop_toBottomOf="@+id/snr"
             tools:ignore="TouchTargetSizeCheck" />
 
+
         <Button
-            android:id="@+id/suddenStrat"
+            android:id="@+id/suddenStart"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:text="@string/suddenStrat"
-            app:layout_constraintHeight_percent="0.04"
             app:layout_constraintEnd_toEndOf="@+id/snr_spinner"
-            app:layout_constraintWidth_percent="0.35"
+            app:layout_constraintHeight_percent="0.04"
             app:layout_constraintTop_toBottomOf="@+id/snr"
+            app:layout_constraintWidth_percent="0.35"
             tools:ignore="TouchTargetSizeCheck" />
-
 
         <Button
             android:id="@+id/start_half_duplex"

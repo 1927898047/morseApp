@@ -137,5 +137,31 @@ public class StringUtils {
         int end = inputString.indexOf(" KK");
         return inputString.substring(start, end).trim();
     }
+
+    public static String getId1FromSuddenLongCode(String inputString) {
+        String[] parts = inputString.split("DE");
+        if (parts.length > 1) {
+            String[] subParts = parts[1].split("TS");
+            if (subParts.length > 0) {
+                String value = subParts[0];
+                value = value.trim();
+                return value;
+            }
+        }
+        return "-1";
+    }
+
+    public static String getId2FromSuddenLongCode(String inputString) {
+        String[] parts = inputString.split("TS ");
+        if (parts.length > 1) {
+            String[] subParts = parts[1].split(" ");
+            if (subParts.length > 0) {
+                String value = subParts[0];
+                value = value.trim();
+                return value;
+            }
+        }
+        return "-1";
+    }
 }
 

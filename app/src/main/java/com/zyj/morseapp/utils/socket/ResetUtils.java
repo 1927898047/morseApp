@@ -1,4 +1,4 @@
-package com.zyj.morseapp.utils;
+package com.zyj.morseapp.utils.socket;
 
 import com.zyj.morseapp.pages.Sockets;
 
@@ -9,11 +9,11 @@ import java.net.URL;
 /**
  * Post请求，在子线程中进行
  */
-public class PostUtils extends Thread{
+public class ResetUtils extends Thread{
     public static String msg="";
     private String str = "";
     public static int code;
-    public PostUtils(String str){
+    public ResetUtils(String str){
         this.str=str;
     }
 
@@ -21,7 +21,7 @@ public class PostUtils extends Thread{
     public void run() {
         try {
             // 1. 获取访问地址URL
-            URL url = new URL("http://"+Sockets.ip+":"+Sockets.port+"/upload_json");
+            URL url = new URL("http://"+Sockets.ip+":"+Sockets.port+"/post_command");
             System.out.println(url);
             // 2. 创建HttpURLConnection对象
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();

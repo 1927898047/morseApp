@@ -9,7 +9,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,9 +19,10 @@ import com.zyj.morseapp.audio.MorseAudio;
 import com.zyj.morseapp.morsecoder.MorseShortCoder;
 import com.zyj.morseapp.utils.ArraysUtils;
 import com.zyj.morseapp.utils.FileUtils;
-import com.zyj.morseapp.utils.PostUtils;
+import com.zyj.morseapp.utils.socket.PostUtils;
 import com.zyj.morseapp.application.MyApplication;
 import com.zyj.morseapp.utils.ptt.MyAudio;
+import com.zyj.morseapp.utils.socket.ResetUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -90,8 +90,8 @@ public class Sockets extends AppCompatActivity {
         setContentView(R.layout.activity_socket);
         send_shortWave = findViewById(R.id.send_shortWave);
         send_longWave = findViewById(R.id.send_longWave);
-        connectionTest = findViewById(R.id.);
-        connectionReset = findViewById(R.id);
+        connectionTest = findViewById(R.id.serverTest);
+        connectionReset = findViewById(R.id.serverRestart);
 
         bt_settings=findViewById(R.id.bt_settings);
         et_port=findViewById(R.id.et_port);
@@ -105,6 +105,8 @@ public class Sockets extends AppCompatActivity {
 
         send_shortWave.setOnClickListener(new MyOnClick());
         send_longWave.setOnClickListener(new MyOnClick());
+        connectionTest.setOnClickListener(new MyOnClick());
+        connectionReset.setOnClickListener(new MyOnClick());
 
         et_port.setOnClickListener(new MyOnClick());
         et_ip.setOnClickListener(new MyOnClick());
@@ -185,11 +187,11 @@ public class Sockets extends AppCompatActivity {
 
 
         // 初始化测试音频
-        shortMorseWavForTestPath = context.getExternalFilesDir("").getAbsolutePath()+"/shortMorseWavForTest";
-        shortMorsePcmForTestPath = context.getExternalFilesDir("").getAbsolutePath()+"/shortMorsePcmForTest";
+        shortMorseWavForTestPath = context.getExternalFilesDir("").getAbsolutePath()+"/shortMorseWavForTest.wav";
+        shortMorsePcmForTestPath = context.getExternalFilesDir("").getAbsolutePath()+"/shortMorsePcmForTest.pcm";
         morseShortCoder = new MorseShortCoder();
         morseAudio = new MorseAudio();
-        String shortCodeForTest = "=== 0000 1111 2222 3333 4444 +++";
+        String shortCodeForTest = "=== 0000 1111 2222 3333 4444 +++ 3333 4444";
         // 字符转摩尔斯码
         String shortMorseForTest= morseShortCoder.encode(shortCodeForTest);
         // 摩尔斯码转音频
@@ -223,7 +225,7 @@ public class Sockets extends AppCompatActivity {
             byteArrayOutputStream_PCM.write(bytes);
             byteArray = byteArrayOutputStream_PCM.toByteArray();
             //创建文件
-            String Path_PCM = shortMorseWavForTestPath;
+            String Path_PCM = shortMorsePcmForTestPath;
             System.out.println(Path_PCM);
             File file_PCM = new File(Path_PCM);
             if(!file_PCM.exists()){
@@ -433,11 +435,91 @@ public class Sockets extends AppCompatActivity {
 
                     Toast.makeText(Sockets.this,"IP设置已更改！",Toast.LENGTH_LONG).show();
                     break;
-                // 后台复位
-                case R.id.
-                    break;
                 // 后台测试
-                case R.id.
+                case R.id.serverTest:
+                    shortMorseWavForTestPath = context.getExternalFilesDir("").getAbsolutePath()+"/shortMorseWavForTest.wav";
+                    shortMorsePcmForTestPath = context.getExternalFilesDir("").getAbsolutePath()+"/shortMorsePcmForTest.pcm";
+
+                    show("");
+                    if(!new File(shortMorsePcmForTestPath).exists()){
+                        Toast.makeText(Sockets.this,"测试音频文件不存在，发送失败！",Toast.LENGTH_LONG).show();
+                        break;
+                    }
+
+                    Toast.makeText(Sockets.this,"正在发送文件......",Toast.LENGTH_LONG).show();
+                    byte[] bytes = FileUtils.fileToByteArr(shortMorsePcmForTestPath);
+                    short[] shorts = ArraysUtils.byteToShortInBigEnd(bytes);
+                    String str = "";
+                    int i = 0;
+                    while(i *32000 < shorts.length) {
+                        if((i + 1) * 32000 > shorts.length){
+                            short[] end = Arrays.copyOfRange(shorts, i * 32000, shorts.length);
+                            str = "{\"data\":\"" + Arrays.toString(end) + "\"}";
+                        }
+                        else{
+                            short[] shorts2 = Arrays.copyOfRange(shorts, i * 32000, (i + 1) * 32000);
+                            str = "{\"data\":\"" + Arrays.toString(shorts2) + "\"}";
+                        }
+                        exec.submit(new PostUtils(str));
+                        exec.submit(new Thread(){
+                            @Override
+                            public void run() {
+                                if(PostUtils.code!=200) {
+                                    show("后台通信失败！");
+                                    System.out.println("后台测试通信失败！");
+                                }
+                                else if(PostUtils.code==200){
+                                    JSONArray content;
+                                    try {
+                                        JSONObject object=new JSONObject(PostUtils.msg);
+                                        content=object.getJSONArray("content");
+                                        if(content.length()!=0){
+                                            show(PostUtils.msg);
+                                        }
+                                        else if(content.length()==0 && output_text.getText().toString().equals("")){
+                                            show("收到空报文");
+                                        }
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                                PostUtils.code=0;
+                            }
+                        });
+                        i++;
+                    }
+                    exec.submit(new Thread(){
+                        @Override
+                        public void run() {
+                            Looper.prepare();
+                            Toast.makeText(Sockets.this,"发送结束！",Toast.LENGTH_LONG).show();
+                            Looper.loop();
+                        }
+                    });
+                    exec.shutdown();
+
+                    break;
+                // 后台复位
+                case R.id.serverRestart:
+                    String resetCommand = "{\"command\":\"" + "reset" + "\"}";
+                    Toast.makeText(Sockets.this,"正在复位后台",Toast.LENGTH_SHORT).show();
+
+                    exec.submit(new ResetUtils(resetCommand));
+                    exec.submit(new Thread(){
+                        @Override
+                        public void run() {
+                            if(ResetUtils.code != 200) {
+                                show("后台复位失败！");
+                                System.out.println("后台测试通信失败！");
+                            }
+                            else if(ResetUtils.code == 200){
+                                show(ResetUtils.msg);
+                            }
+                            ResetUtils.code=0;
+                        }
+                    });
+                    exec.shutdown();
+
                     break;
                 default:
                     break;

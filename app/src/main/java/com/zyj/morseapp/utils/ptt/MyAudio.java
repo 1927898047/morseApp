@@ -5,7 +5,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -19,7 +18,6 @@ import android.media.AudioRecord;
 import android.media.AudioTrack;
 import android.media.MediaRecorder;
 import android.os.Handler;
-import android.os.Message;
 import android.os.Process;
 
 import androidx.core.app.ActivityCompat;
@@ -27,7 +25,7 @@ import androidx.core.app.ActivityCompat;
 import com.zyj.morseapp.R;
 import com.zyj.morseapp.application.MyApplication;
 import com.zyj.morseapp.utils.ArraysUtils;
-import com.zyj.morseapp.utils.PostUtils;
+import com.zyj.morseapp.utils.socket.PostUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
