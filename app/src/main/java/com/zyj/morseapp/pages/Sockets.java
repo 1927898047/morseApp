@@ -17,19 +17,24 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.zyj.morseapp.R;
 import com.zyj.morseapp.audio.MorseAudio;
+import com.zyj.morseapp.morsecoder.MorseShortCoder;
 import com.zyj.morseapp.utils.ArraysUtils;
 import com.zyj.morseapp.utils.FileUtils;
 import com.zyj.morseapp.utils.PostUtils;
 import com.zyj.morseapp.application.MyApplication;
-import com.zyj.morseapp.utils.ptt.CWEncoder;
 import com.zyj.morseapp.utils.ptt.MyAudio;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -38,6 +43,8 @@ public class Sockets extends AppCompatActivity {
     private static TextView output_text =null;
     private static Button send_shortWave=null;
     private static Button send_longWave=null;
+    private static Button connectionTest = null;
+    private static Button connectionReset = null;
 
     private Context context=null;
     public static String port = "5000";
@@ -69,6 +76,12 @@ public class Sockets extends AppCompatActivity {
 
     public static int longWpm = 25;
     public static int shortWpm = 40;
+    private static MorseShortCoder morseShortCoder;
+    private static String shortMorseWavForTestPath;
+    private static String shortMorsePcmForTestPath;
+
+    private MorseAudio morseAudio;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +90,8 @@ public class Sockets extends AppCompatActivity {
         setContentView(R.layout.activity_socket);
         send_shortWave = findViewById(R.id.send_shortWave);
         send_longWave = findViewById(R.id.send_longWave);
+        connectionTest = findViewById(R.id.);
+        connectionReset = findViewById(R.id);
 
         bt_settings=findViewById(R.id.bt_settings);
         et_port=findViewById(R.id.et_port);
@@ -166,6 +181,62 @@ public class Sockets extends AppCompatActivity {
                 return false;
             }
         });
+
+
+
+        // 初始化测试音频
+        shortMorseWavForTestPath = context.getExternalFilesDir("").getAbsolutePath()+"/shortMorseWavForTest";
+        shortMorsePcmForTestPath = context.getExternalFilesDir("").getAbsolutePath()+"/shortMorsePcmForTest";
+        morseShortCoder = new MorseShortCoder();
+        morseAudio = new MorseAudio();
+        String shortCodeForTest = "=== 0000 1111 2222 3333 4444 +++";
+        // 字符转摩尔斯码
+        String shortMorseForTest= morseShortCoder.encode(shortCodeForTest);
+        // 摩尔斯码转音频
+        short[] shorts = morseAudio.codeConvert2Sound(shortMorseForTest, 35);
+        byte[] bytes=new byte[shorts.length*2];
+        //大端序转小端序
+        ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().put(shorts);
+        byte[] header = new byte[0];
+        try {
+            header = morseAudio.writeWavFileHeader(shorts.length*2, 8000, 1, 16);
+            //生成wav文件
+            ByteArrayOutputStream byteArrayOutputStream_WAV = new ByteArrayOutputStream();
+            byteArrayOutputStream_WAV.write(header);
+            byteArrayOutputStream_WAV.write(bytes);
+            byte[] byteArray = byteArrayOutputStream_WAV.toByteArray();
+            //创建文件
+            String Path_WAV = shortMorseWavForTestPath;
+            System.out.println(Path_WAV);
+            File file_WAV = new File(Path_WAV);
+            if(!file_WAV.exists()){
+                file_WAV.createNewFile();//创建MorseCode.wav文件
+                //覆盖写入
+                OutputStream os_WAV = new FileOutputStream(file_WAV);
+                os_WAV.write(byteArray);
+                os_WAV.close();
+            }
+
+
+            //生成pcm文件
+            ByteArrayOutputStream byteArrayOutputStream_PCM = new ByteArrayOutputStream();
+            byteArrayOutputStream_PCM.write(bytes);
+            byteArray = byteArrayOutputStream_PCM.toByteArray();
+            //创建文件
+            String Path_PCM = shortMorseWavForTestPath;
+            System.out.println(Path_PCM);
+            File file_PCM = new File(Path_PCM);
+            if(!file_PCM.exists()){
+                file_PCM.createNewFile();//创建MorseCode.wav文件
+                //覆盖写入
+                OutputStream os_PCM = new FileOutputStream(file_PCM);
+                os_PCM.write(byteArray);
+                os_PCM.close();
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void show(String str) {
@@ -203,12 +274,6 @@ public class Sockets extends AppCompatActivity {
                         if((i1+1)*32000>shorts1.length){
                             short[] end = Arrays.copyOfRange(shorts1, i1 * 32000, shorts1.length);
                             str1 = "{\"data\":\"" + Arrays.toString(end) + "\"}";
-//                            System.out.println(str1.substring(str1.length()-100));
-//                            System.out.println(end.length);
-//                            short[] test=Arrays.copyOfRange(shorts1, i1 * 32000, (i1 + 1) * 32000);
-//                            String str3="{\"data\":\"" + Arrays.toString(test) + "\"}";
-//                            System.out.println(test.length);
-//                            System.out.println(str3.substring(str3.length()-100));
                         }
                         else{
                             short[] shorts2 = Arrays.copyOfRange(shorts1, i1 * 32000, (i1 + 1) * 32000);
@@ -368,10 +433,18 @@ public class Sockets extends AppCompatActivity {
 
                     Toast.makeText(Sockets.this,"IP设置已更改！",Toast.LENGTH_LONG).show();
                     break;
+                // 后台复位
+                case R.id.
+                    break;
+                // 后台测试
+                case R.id.
+                    break;
                 default:
                     break;
             }
 
         }
     }
+
+
 }
