@@ -50,8 +50,8 @@ public class SuddenLongCodeMessage {
                 + gLen + " "
                 + gLenSum + " "
                 + communicationId + " "
-                + shortCodeContent + " "
-                + other + " ";
+                + other + " "
+                + shortCodeContent + " ";
 
         String temp = "DE" + " "
                 + senderId + " "
@@ -60,8 +60,8 @@ public class SuddenLongCodeMessage {
                 + gLen + " "
                 + gLenSum + " "
                 + communicationId + " "
-                + shortCodeContent + " "
-                + other + " ";
+                + other + " "
+                + shortCodeContent + " ";
 
         longCrc = MessageUtils.getCRC16(temp.trim());
         longCodeMessage = longCodeMessage + longCrc + " " + tail;
