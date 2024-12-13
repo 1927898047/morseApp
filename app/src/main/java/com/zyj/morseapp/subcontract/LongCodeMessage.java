@@ -32,8 +32,12 @@ public class LongCodeMessage {
     // 通信ID
     private int communicationId;
 
+    // 附注
+    private String other;
+
     public LongCodeMessage(String senderId, String receiverId, String gLen, String gLenSum,
-                           String groupNum, List<String> shortCrcList, int shortCodeWpm, int communicationId){
+                           String groupNum, List<String> shortCrcList, int shortCodeWpm, int communicationId,
+                           String other){
         this.senderId = senderId;
         this.receiverId = receiverId;
         this.gLen = gLen;
@@ -42,6 +46,7 @@ public class LongCodeMessage {
         this.shortCrcList = shortCrcList;
         this.shortCodeWpm = shortCodeWpm;
         this.communicationId = communicationId;
+        this.other = other;
     }
 
 
@@ -55,7 +60,8 @@ public class LongCodeMessage {
                 + gLenSum + " "
                 + groupNum + " "
                 + shortCodeWpm + " "
-                + communicationId + " ";
+                + communicationId + " "
+                + other + " ";
 
         for (String str : shortCrcList){
             longCodeMessage = longCodeMessage + str + " ";
@@ -69,7 +75,8 @@ public class LongCodeMessage {
                 + gLenSum + " "
                 + groupNum + " "
                 + shortCodeWpm + " "
-                + communicationId + " ";
+                + communicationId + " "
+                + other + " ";
         for (String str : shortCrcList){
             temp = temp + str + " ";
         }

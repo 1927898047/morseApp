@@ -97,17 +97,16 @@
             tools:ignore="TouchTargetSizeCheck" />
 
 
-
         <EditText
             android:id="@+id/other"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="4dp"
+            android:autofillHints="@string/other"
             android:background="@drawable/translucent"
             android:ems="10"
             android:gravity="center"
             android:hint="@string/other"
-            android:autofillHints="@string/other"
             android:inputType="textPersonName"
             android:textCursorDrawable="@drawable/edittext_cursor"
             android:textSize="15sp"

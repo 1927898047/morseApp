@@ -203,6 +203,9 @@ public class HalfDuplex extends AppCompatActivity {
     // 长码信息中的每包最大组数
     int shortCodeGLen;
     HalfDuplexMode mode;
+    // 附注
+    String other;
+
 
     // 接收短码时
     // 短码报文是不是第一组
@@ -1345,6 +1348,11 @@ public class HalfDuplex extends AppCompatActivity {
                 // 发送
                 case R.id.send_button:
 
+                    if (isHalfDuplexWorking == 0) {
+                        Toast.makeText(HalfDuplex.this,"半双工通信未开启！",Toast.LENGTH_LONG).show();
+                        return ;
+                    }
+
                     // 拿到上次的通信ID
                     try {
                         communicationIdForSend = Integer.valueOf(FileUtils.readTxt(communicationIdForSendTxtPath));
@@ -1388,11 +1396,11 @@ public class HalfDuplex extends AppCompatActivity {
 //                    String level = longCodeLevel.getText().toString() == null || longCodeLevel.getText().toString().equals("") ? "0" : longCodeLevel.getText().toString();
 //                    String mmDD = longCodeMMDD.getText().toString() == null || longCodeMMDD.getText().toString().equals("") ? "0820" : longCodeMMDD.getText().toString();
 //                    String hhMM = longCodeHHMM.getText().toString() == null || longCodeHHMM.getText().toString().equals("") ? "1255" : longCodeHHMM.getText().toString();
-//                    String other = longCodeOther.getText().toString() == null || longCodeOther.getText().toString().equals("") ? "0" : longCodeOther.getText().toString();
+                    String other = longCodeOther.getText().toString() == null || longCodeOther.getText().toString().equals("") ? "0" : longCodeOther.getText().toString();
 
                     shortCodeWpm = Integer.parseInt((shortCodeSpeedInput.getText().toString() == null) || (shortCodeSpeedInput.getText().toString().equals("")) ? String.valueOf(shortCodeWpm) : shortCodeSpeedInput.getText().toString());
                     maxGLen = (maxGLenInput.getText().toString() == null) || (maxGLenInput.getText().toString().equals("")) ? 5 : Integer.parseInt(maxGLenInput.getText().toString());
-                    shortContent = shortCodeInput.getText().toString() == null ? "" : shortCodeInput.getText().toString();
+                    shortContent = shortCodeInput.getText().toString() == null ? "0" : shortCodeInput.getText().toString();
                     // 将shortCode按组数分开
                     MessageUtils.setGLen(maxGLen);
                     shortCodeGroup = MessageUtils.createShortCodeGroup(shortContent);
@@ -1419,7 +1427,7 @@ public class HalfDuplex extends AppCompatActivity {
                     Arrays.fill(shortMorseCheckFlag, 1);
                     // 构建长码报文
                     longCodeMessage = new LongCodeMessage(myDeviceId, destDeviceId, String.valueOf(maxGLen), String.valueOf(gLenSum),
-                            String.valueOf(shortCodeMessageCacheForSend.size()), shortCodeCrcList, shortCodeWpm, communicationIdForSend);
+                            String.valueOf(shortCodeMessageCacheForSend.size()), shortCodeCrcList, shortCodeWpm, communicationIdForSend, other);
                     longCodeMessageContent = longCodeMessage.getLongCodeMessage();
                     longMorseContent = morseLongCoder.encode(longCodeMessageContent);
 
@@ -1479,6 +1487,12 @@ public class HalfDuplex extends AppCompatActivity {
                     break;
                 // 卒发通信
                 case R.id.suddenStart:
+
+                    if (isHalfDuplexWorking == 0) {
+                        Toast.makeText(HalfDuplex.this,"半双工通信未开启！",Toast.LENGTH_LONG).show();
+                        return ;
+                    }
+
                     sendSuddenLongCodeMessage = false;
 
                     // 拿到上次的通信ID
@@ -2125,11 +2139,12 @@ public class HalfDuplex extends AppCompatActivity {
                                             shortCodeWpmInLongCode = 35;
                                             System.out.println("未拿到长码中的短码码速，默认：" + String.valueOf(shortCodeWpmInLongCode) + "wpm");
                                         }
-                                        for (int i = 9; i < noTrimCode.size() - 1; i++){
+                                        for (int i = 10; i < noTrimCode.size() - 1; i++){
                                             shortCrcListForRec.add(noTrimCode.get(i));
                                         }
 
                                         // 更新应接收的短码总包数
+                                        other = noTrimCode.get(9);
                                         communicationIdForRec = Integer.parseInt(noTrimCode.get(8));
                                         shortCodePkgNum = Integer.parseInt(noTrimCode.get(6));
                                         shortCodeGroupNum = Integer.parseInt(noTrimCode.get(5));
@@ -2138,6 +2153,7 @@ public class HalfDuplex extends AppCompatActivity {
                                         System.out.println("拿到长码中的短码组数：" + shortCodeGroupNum);
                                         System.out.println("拿到长码中的短码包最大长度：" + shortCodeGLen);
                                         System.out.println("拿到长码中的通信ID：" + communicationIdForRec);
+                                        System.out.println("拿到长码中的附加信息：" + other);
 
                                         lastOnePkgId = shortCrcListForRec.size() - 1;
                                         longCrcCode = StringUtils.getLongCrc(content);
