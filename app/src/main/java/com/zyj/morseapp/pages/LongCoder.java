@@ -6,9 +6,12 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,6 +59,9 @@ public class LongCoder extends AppCompatActivity {
 
     Intent intent=null;
 
+    // 信噪比
+    public static int gussianNoise = 4000;
+
     public void setWpm(int val){
         this.wpm=val;
         System.out.println("wpm:"+wpm);
@@ -102,6 +108,55 @@ public class LongCoder extends AppCompatActivity {
         context= MyApplication.getContext();
 
         mediaPlayer = new MediaPlayer();
+
+        // 信噪比下拉框
+        // 在你的Activity或Fragment中
+//        Spinner spinner = findViewById(R.id.snr_spinner2);
+//        // 定义下拉列表的选项
+//        String[] items = new String[] {"无噪声", "1dB", "-5dB", "-7dB","-11dB", "-12dB"};
+//        // 创建适配器
+//        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, items);
+//
+//        // 设置下拉列表的下拉样式（可选）
+//        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//        // 将适配器设置给Spinner
+//        spinner.setAdapter(adapter);
+//        spinner.setSelection(1);
+//        // 设置监听器
+//        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                // 获取选中项的文本
+//                String selectedItemText = (String) parent.getItemAtPosition(position);
+//                // 根据选中项做进一步处理
+//                System.out.println(selectedItemText);
+//                switch (selectedItemText) {
+//                    case "无噪声":
+//                        gussianNoise = 0;
+//                        break;
+//                    case "1dB":
+//                        gussianNoise = 7130;
+//                        break;
+//                    case "-5dB":
+//                        gussianNoise = 14266;
+//                        break;
+//                    case "-7dB":
+//                        gussianNoise = 17910;
+//                        break;
+//                    case "-11dB":
+//                        gussianNoise = 28385;
+//                        break;
+//                    case "-12dB":
+//                        gussianNoise = 31849;
+//                        break;
+//                }
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> parent) {
+//                // 可以在没有选项被选中时做一些处理
+//            }
+//        });
     }
 
     /**
@@ -190,6 +245,8 @@ public class LongCoder extends AppCompatActivity {
                             Toast.makeText(LongCoder.this,"输入内容为空，无法进行编码！",Toast.LENGTH_LONG).show();
                             break;
                         }
+                        morseAudio.setChangeSnr(true);
+                        morseAudio.setGussianNoise(gussianNoise);
                         short[] shorts = morseAudio.codeConvert2Sound(str_morse,getWpm());
                         byte[] bytes=new byte[shorts.length*2];
                         //大端序转小端序

@@ -364,12 +364,23 @@ public class HalfDuplex extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        isHalfDuplexWorking = 0;
+        start_half_duplex.setText("启动半双工通信");
+        if (Objects.isNull(audioRecord)){
+            return ;
+        }
+        stopRecording();
+        Toast.makeText(HalfDuplex.this,"半双工通信线程关闭！",Toast.LENGTH_LONG).show();
+    }
+
     public void refreshLogView(String msg){
         output_text.post(new Runnable() {
             @Override
             public void run() {
                 output_text.append(msg);
-
                 Layout layout = output_text.getLayout();
                 // 获取最后一行的底部
                 int desired = layout.getLineTop(output_text.getLineCount());
@@ -1468,6 +1479,7 @@ public class HalfDuplex extends AppCompatActivity {
                     break;
                 // 卒发通信
                 case R.id.suddenStart:
+                    sendSuddenLongCodeMessage = false;
 
                     // 拿到上次的通信ID
                     try {
@@ -1591,7 +1603,7 @@ public class HalfDuplex extends AppCompatActivity {
 
             int count = 0; // 轮询计数器
             boolean condition = false; // 用于检查的变量
-            while (count < maxAttempts && !condition) {
+            while (count < maxAttempts) {
                 System.out.println("【等待测试长码报文线程】轮询收端响应: " + (count + 1) + "次");
                 // 阻塞并轮询
                 try {
@@ -2328,6 +2340,7 @@ public class HalfDuplex extends AppCompatActivity {
         try {
             MorseAudio morseAudio = new MorseAudio();
             morseAudio.setChangeSnr(true);
+            morseAudio.setGussianNoise(gussianNoise);
 
             short[] shorts = morseAudio.codeConvert2Sound(content, wpm);
             byte[] bytes=new byte[shorts.length*2];
@@ -2428,6 +2441,7 @@ public class HalfDuplex extends AppCompatActivity {
         try {
             MorseAudio morseAudio = new MorseAudio();
             morseAudio.setChangeSnr(true);
+            morseAudio.setGussianNoise(gussianNoise);
 
             short[] shorts = morseAudio.codeConvert2Sound(content, wpm);
             byte[] bytes=new byte[shorts.length*2];
@@ -2528,6 +2542,7 @@ public class HalfDuplex extends AppCompatActivity {
         try {
             MorseAudio morseAudio = new MorseAudio();
             morseAudio.setChangeSnr(true);
+            morseAudio.setGussianNoise(gussianNoise);
 
             short[] shorts = morseAudio.codeConvert2Sound(content, wpm);
             byte[] bytes=new byte[shorts.length*2];
@@ -2631,6 +2646,8 @@ public class HalfDuplex extends AppCompatActivity {
         try {
             MorseAudio morseAudio = new MorseAudio();
             morseAudio.setChangeSnr(true);
+            morseAudio.setGussianNoise(gussianNoise);
+
             short[] shorts = morseAudio.codeConvert2Sound(content, wpm);
             byte[] bytes=new byte[shorts.length*2];
             //大端序转小端序
@@ -2724,6 +2741,8 @@ public class HalfDuplex extends AppCompatActivity {
         try {
             MorseAudio morseAudio = new MorseAudio();
             morseAudio.setChangeSnr(true);
+            morseAudio.setGussianNoise(gussianNoise);
+
             short[] shorts = morseAudio.codeConvert2Sound(content, wpm);
             byte[] bytes=new byte[shorts.length*2];
             //大端序转小端序
@@ -2816,6 +2835,8 @@ public class HalfDuplex extends AppCompatActivity {
         try {
             MorseAudio morseAudio = new MorseAudio();
             morseAudio.setChangeSnr(true);
+            morseAudio.setGussianNoise(gussianNoise);
+
             short[] shorts = morseAudio.codeConvert2Sound(content, wpm);
             byte[] bytes=new byte[shorts.length*2];
             //大端序转小端序

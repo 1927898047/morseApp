@@ -319,17 +319,17 @@ public class Sockets extends AppCompatActivity {
                     });
                     exec.shutdown();
 
-                    // ptt脉冲输出
-                    System.out.println("ShortCoder.shortMorseContentForPtt:" + ShortCoder.shortMorseContentForPtt);
-                    System.out.println("shortWpm:" + shortWpm);
-                    try {
-                        String shortMorseStr = ShortCoder.shortMorseContentForPtt;
-                        MorseAudio morseAudioObj1 = new MorseAudio();
-                        short[] shortMorseStrArr = morseAudioObj1.codeConvert2Sound(shortMorseStr, shortWpm);
-                        MyAudio.getInstance().playMorse(shortMorseStr, shortWpm);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+//                    // ptt脉冲输出
+//                    System.out.println("ShortCoder.shortMorseContentForPtt:" + ShortCoder.shortMorseContentForPtt);
+//                    System.out.println("shortWpm:" + shortWpm);
+//                    try {
+//                        String shortMorseStr = ShortCoder.shortMorseContentForPtt;
+//                        MorseAudio morseAudioObj1 = new MorseAudio();
+//                        short[] shortMorseStrArr = morseAudioObj1.codeConvert2Sound(shortMorseStr, shortWpm);
+//                        MyAudio.getInstance().playMorse(shortMorseStr, shortWpm);
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
 
 
                     break;
@@ -392,17 +392,17 @@ public class Sockets extends AppCompatActivity {
                     });
                     exec.shutdown();
 
-                    // ptt脉冲输出
-                    System.out.println("LongCoder.longMorseContentForPtt:" + LongCoder.longMorseContentForPtt);
-                    System.out.println("longWpm:" + longWpm);
-                    try {
-                        String longMorseStr = LongCoder.longMorseContentForPtt;
-                        MorseAudio morseAudioObj2 = new MorseAudio();
-                        short[] longMorseStrArr = morseAudioObj2.codeConvert2Sound(longMorseStr, longWpm);
-                        MyAudio.getInstance().playMorse(longMorseStr, longWpm);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+//                    // ptt脉冲输出
+//                    System.out.println("LongCoder.longMorseContentForPtt:" + LongCoder.longMorseContentForPtt);
+//                    System.out.println("longWpm:" + longWpm);
+//                    try {
+//                        String longMorseStr = LongCoder.longMorseContentForPtt;
+//                        MorseAudio morseAudioObj2 = new MorseAudio();
+//                        short[] longMorseStrArr = morseAudioObj2.codeConvert2Sound(longMorseStr, longWpm);
+//                        MyAudio.getInstance().playMorse(longMorseStr, longWpm);
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
 
 
                     break;

@@ -30,8 +30,17 @@ public class MorseAudio {
 
     private boolean changeSnr = false;
 
+    private int gussianNoise = 0;
+
+    private int activeWpm = 20;
+    private String activeCode = "-//";
+
     public void setChangeSnr(boolean changeSnr) {
         this.changeSnr = changeSnr;
+    }
+
+    public void setGussianNoise(int gussianNoise) {
+        this.gussianNoise = gussianNoise;
     }
 
     /**
@@ -52,12 +61,38 @@ public class MorseAudio {
         long frequency = 0;
         // 采样率
         float SampleRate=8000;
-        // 开始加一段空的音频
-        System.out.println("开始加一段空的音频:"+pcmAudio.size());
-        soundLength = 10;
-        frequency = 0;
-        addPcmWave(SampleRate,wpm,soundLength,frequency,pcmAudio);
-        System.out.println("开始加一段空的音频:"+pcmAudio.size());
+
+        //增加激活码
+        for(int i = 0; i< activeCode.length(); i++){
+            String code = Character.toString(activeCode.charAt(i));
+            switch (code){
+                case dahString:
+                    frequency = 1000;
+                    soundLength = dah;
+                    addPcmWave(SampleRate,activeWpm,soundLength,frequency,pcmAudio);
+                    //每个字符后面
+                    frequency = 0;
+                    soundLength = dit;
+                    addPcmWave(SampleRate,activeWpm,soundLength,frequency,pcmAudio);
+                    break;
+                case ditString:
+                    frequency = 1000;
+                    soundLength = dit;
+                    addPcmWave(SampleRate,activeWpm,soundLength,frequency,pcmAudio);
+                    frequency = 0;
+                    soundLength = dit;
+                    addPcmWave(SampleRate,activeWpm,soundLength,frequency,pcmAudio);
+                    break;
+                case intervalString:
+                    frequency = 0;
+                    soundLength = 2;
+                    addPcmWave(SampleRate,activeWpm,soundLength,frequency,pcmAudio);
+                    break;
+                default:
+                    break;
+            }
+        }
+
         //计算每一个字符的音波
         for(int i=0; i<codeString.length(); i++){
             String code = Character.toString(codeString.charAt(i));
@@ -118,7 +153,7 @@ public class MorseAudio {
             double randomNum = random.nextDouble();
             // 判断是否需要调整信噪比
             if (changeSnr) {
-                pcmAudio.add( (short)( Math.sin( angle ) *8000 + Math.sin(randomNum) * HalfDuplex.gussianNoise));
+                pcmAudio.add( (short)( Math.sin( angle ) *8000 + Math.sin(randomNum) * gussianNoise));
             } else {
                 pcmAudio.add( (short)( Math.sin( angle ) *8000 + Math.sin(randomNum) *4000));
             }
