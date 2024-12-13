@@ -1784,7 +1784,6 @@ public class HalfDuplex extends AppCompatActivity {
                     // 更新剩余的包数、组数
                     shortCodePkgNum = uncheckedPkgIds.size();
                     shortCodeGroupNum = uncheckedPkgIds.size() * shortCodeGLen;
-
                     System.out.println("uncheckedPkgIds:" + uncheckedPkgIds);
 
                     if (uncheckedPkgIds.isEmpty()){
@@ -1982,8 +1981,6 @@ public class HalfDuplex extends AppCompatActivity {
                             }
 
                             try {
-                                emptyShortCodeTime = 0;
-
                                 for (int i = 0; i < shortCodes.size(); i++){
                                     tempShortText = tempShortText.append(shortCodes.get(i)).append(" ");
                                 }

@@ -110,7 +110,8 @@ public class MorseAudio {
 
     public void addPcmWave(float SampleRate,int wpm,int soundLength,long frequency,ArrayList<Short> pcmAudio){
         // 生成PCM波
-        for ( int k = 0; k < 80*soundLength * SampleRate / (5*wpm/6)/84; k++ ) {
+        soundLength = 1200/wpm * soundLength;
+        for ( int k = 0; k < soundLength * SampleRate / 1000; k++ ) {
             double angle = k / ( SampleRate / frequency ) * 2.0 * Math.PI;
 
             Random random = new Random();
@@ -122,7 +123,25 @@ public class MorseAudio {
                 pcmAudio.add( (short)( Math.sin( angle ) *8000 + Math.sin(randomNum) *4000));
             }
         }
+
+
+//        // 生成PCM波
+//        for ( int k = 0; k < soundLength * SampleRate / frequency; k++ ) {
+//            double angle = k / ( SampleRate / frequency ) * 2.0 * Math.PI;
+//
+//            Random random = new Random();
+//            double randomNum = random.nextDouble();
+//            // 判断是否需要调整信噪比
+//            if (changeSnr) {
+//                pcmAudio.add( (short)( Math.sin( angle ) *8000 + Math.sin(randomNum) * HalfDuplex.gussianNoise));
+//            } else {
+//                pcmAudio.add( (short)( Math.sin( angle ) *8000 + Math.sin(randomNum) *4000));
+//            }
+//        }
     }
+
+
+
 
 
     /**
