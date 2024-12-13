@@ -156,8 +156,8 @@ public class AudioRecordUtils{
                     // 从音频硬件读取音频数据，以便记录到字节数组中。
                     int read = audioRecord.read(data, 0, recordBufSize);
                     //调整音量大小
-                    amplifyPCMData(data, data.length, dataNew,16,(float) Math.pow(10, (double)5 / 20));
-                    short[] shortData = ArraysUtils.byteToShortInBigEnd(dataNew);
+//                    amplifyPCMData(data, data.length, dataNew,16,(float) Math.pow(10, (double)5 / 20));
+                    short[] shortData = ArraysUtils.byteToShortInBigEnd(data);
                     str = "{\"data\":\"" + Arrays.toString(shortData) + "\"}";
                     exec.submit(new PostUtils(str));
                     exec.submit(new Thread(){

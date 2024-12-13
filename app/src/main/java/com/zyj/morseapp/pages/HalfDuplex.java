@@ -1723,12 +1723,12 @@ public class HalfDuplex extends AppCompatActivity {
                 byte[] newCopiedData = new byte[recordBufSize];
                 System.arraycopy(data, 0, copiedData, 0, recordBufSize);
                 //调整音量大小
-                amplifyPCMData(copiedData, copiedData.length, newCopiedData,16, (float) Math.pow(10, (double)5 / 20));
-                allRecordArrays.add(newCopiedData);
+//                amplifyPCMData(copiedData, copiedData.length, newCopiedData,16, (float) Math.pow(10, (double)5 / 20));
+                allRecordArrays.add(copiedData);
 
                 //调整音量大小
-                amplifyPCMData(data, data.length, dataNew,16, (float) Math.pow(10, (double)5 / 20));
-                short[] shortData = ArraysUtils.byteToShortInBigEnd(dataNew);
+//                amplifyPCMData(data, data.length, dataNew,16, (float) Math.pow(10, (double)5 / 20));
+                short[] shortData = ArraysUtils.byteToShortInBigEnd(data);
                 String str = "{\"data\":\"" + Arrays.toString(shortData) + "\"}";
                 // 将数据发送到服务器的代码
                 sendToServer(str);

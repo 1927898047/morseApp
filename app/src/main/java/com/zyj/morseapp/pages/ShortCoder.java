@@ -262,7 +262,7 @@ public class ShortCoder extends AppCompatActivity {
                 case R.id.audio_button:
                     try {
                         // 字符转摩尔斯
-                        str_char=input_text.getText().toString();
+                        str_char = input_text.getText().toString();
                         shortMorseContentForPtt = str_morse;
 
                         String regex = ".*[a-zA-z].*";
