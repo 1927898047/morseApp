@@ -1516,7 +1516,7 @@ public class HalfDuplex extends AppCompatActivity {
     }
 
     /**
-     * 发送猝发长码报文
+     * 发送测试长码报文
      */
     private class SendSuddenLongCodeAsyncTask implements Runnable {
         private String content;
@@ -1533,12 +1533,12 @@ public class HalfDuplex extends AppCompatActivity {
         @Override
         public void run() {
 
-            System.out.println("【发送猝发长码报文线程】启动！");
-            System.out.println("【发送猝发长码报文线程】正在进行第一次长码发送...");
+            System.out.println("【发送测试长码报文线程】启动！");
+            System.out.println("【发送测试长码报文线程】正在进行第一次长码发送...");
 
-            refreshLogView("[1]发送猝发长码报文...");
+            refreshLogView("[1]发送测试长码报文...");
             refreshLogView("\n");
-            refreshLogView("[1]猝发长码报文内容：" + "\n" + longCodeContent);
+            refreshLogView("[1]测试长码报文内容：" + "\n" + longCodeContent);
             refreshLogView("\n");
 
             // 发送过程，关闭录音
@@ -1556,22 +1556,22 @@ public class HalfDuplex extends AppCompatActivity {
 
             // 如果接收到长码响应，则建立连接成功，呼叫线程结束
             if (recSuddenLongCodeMessage) {
-                System.out.println("【发送猝发长码报文线程】第一次长码发送，线程终止！");
+                System.out.println("【发送测试长码报文线程】第一次长码发送，线程终止！");
             } else {
-                System.out.println("【发送猝发长码报文线程】第一次长码发送，线程终止！");
+                System.out.println("【发送测试长码报文线程】第一次长码发送，线程终止！");
             }
         }
     }
 
     /**
-     * 等待猝发长码报文
+     * 等待测试长码报文
      */
     private class WaitSuddenLongCodeAsyncTask implements Runnable {
         @Override
         public void run() {
-            System.out.println("【等待猝发长码报文线程】启动！");
+            System.out.println("【等待测试长码报文线程】启动！");
             // 第一次发送接收
-            System.out.println("【等待猝发长码报文线程】等待猝发长码报文发送...");
+            System.out.println("【等待测试长码报文线程】等待测试长码报文发送...");
             while (!sendSuddenLongCodeMessage) {
                 try {
                     Thread.sleep(1000);
@@ -1579,20 +1579,20 @@ public class HalfDuplex extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
-            refreshLogView("[1]猝发长码报文发送完成！");
+            refreshLogView("[1]测试长码报文发送完成！");
             refreshLogView("\n");
 
-            System.out.println("【等待猝发长码报文线程】监测到猝发长码报文发送完成！");
+            System.out.println("【等待测试长码报文线程】监测到测试长码报文发送完成！");
             // 等待报文响应
-            System.out.println("【等待猝发长码报文线程】等待收端响应");
-            refreshLogView("[2]等待猝发长码报文响应...");
+            System.out.println("【等待测试长码报文线程】等待收端响应");
+            refreshLogView("[2]等待测试长码报文响应...");
             refreshLogView("\n");
 
 
             int count = 0; // 轮询计数器
             boolean condition = false; // 用于检查的变量
             while (count < maxAttempts && !condition) {
-                System.out.println("【等待猝发长码报文线程】轮询收端响应: " + (count + 1) + "次");
+                System.out.println("【等待测试长码报文线程】轮询收端响应: " + (count + 1) + "次");
                 // 阻塞并轮询
                 try {
                     Thread.sleep(1000); // 休眠1秒
@@ -1601,8 +1601,8 @@ public class HalfDuplex extends AppCompatActivity {
                     String destDeviceId = StringUtils.getId1FromRecLongCodeMessage1(res);
                     String srcDeviceId = StringUtils.getId2FromRecLongCodeMessage1(res);
                     System.out.println("res:" + res);
-                    System.out.println("【等待猝发长码报文线程】destDeviceId:" + destDeviceId);
-                    System.out.println("【等待猝发长码报文线程】srcDeviceId:" + srcDeviceId);
+                    System.out.println("【等待测试长码报文线程】destDeviceId:" + destDeviceId);
+                    System.out.println("【等待测试长码报文线程】srcDeviceId:" + srcDeviceId);
 
                     // 如果返回内容的设备号匹配，则进入下一个状态
                     // 启动发送短码的线程 && 启动接收短码的线程
@@ -1611,9 +1611,9 @@ public class HalfDuplex extends AppCompatActivity {
                         JSONObject jsonObject = new JSONObject(rec_content);
                         String talkContent = jsonObject.getString("talkContent");
                         // 收到响应报文后，延时6s，防止报文未接收完
-                        refreshLogView("[2]收到猝发长码报文响应！");
+                        refreshLogView("[2]收到测试长码报文响应！");
                         refreshLogView("\n");
-                        refreshLogView("[2]猝发长码报文响应内容：" + "\n" + talkContent);
+                        refreshLogView("[2]测试长码报文响应内容：" + "\n" + talkContent);
                         refreshLogView("\n");
                         Thread.sleep(6000); // 休眠6秒
 
@@ -1622,7 +1622,7 @@ public class HalfDuplex extends AppCompatActivity {
                         // 唤醒其他线程
                         recSuddenLongCodeMessage = true;
                         connectStatus = true;
-                        System.out.println("【等待猝发长码报文线程】收到响应长码报文，线程结束！");
+                        System.out.println("【等待测试长码报文线程】收到响应长码报文，线程结束！");
                         synchronized (lock4) {
                             lock4.notify();
                         }
@@ -1635,7 +1635,7 @@ public class HalfDuplex extends AppCompatActivity {
                 }
                 count++; // 增加轮询计数器
             }
-            refreshLogView("[2]猝发长码报文未收到响应！");
+            refreshLogView("[2]测试长码报文未收到响应！");
             refreshLogView("\n");
         }
     }
@@ -1897,7 +1897,7 @@ public class HalfDuplex extends AppCompatActivity {
                         // 通过主线程的Handler来播放音频和停止录音
                         // 延迟1秒后发送
                         receiveHandler.post(() -> {
-                            refreshLogView("[6]开始发送猝发长码报文应答...");
+                            refreshLogView("[6]开始发送测试长码报文应答...");
                             refreshLogView("\n");
 
                             System.out.println("开始发送音频，音频内容：" + sendContent);
@@ -2038,7 +2038,7 @@ public class HalfDuplex extends AppCompatActivity {
                             // 目标设备匹配到本机
                             if (dest_deviceId.equals(myDeviceId)) {
                                 System.out.println("设备号匹配");
-                                // 猝发通信报文
+                                // 测试通信报文
                                 if (content.contains("TS")){
                                     String validContent;
                                     String containsShortCodeCrc;
@@ -2067,22 +2067,22 @@ public class HalfDuplex extends AppCompatActivity {
                                                 + "DE " + myDeviceId + " "
                                                 + "TS OK KKK";
                                         recv_content1 = addPreamble(recv_content1, preambleNum);
-                                        System.out.println("猝发长码响应报文:" + recv_content1);
+                                        System.out.println("测试长码响应报文:" + recv_content1);
 
                                         // 长码译码
                                         morseStr1 = morseLongCoder.encode(recv_content1);
                                         // 接收到长码
                                         recIsSuddenLongCode = true;
-                                        refreshLogView("[2]接收到猝发长码报文，内容：" + "\n" + content);
+                                        refreshLogView("[2]接收到测试长码报文，内容：" + "\n" + content);
                                         refreshLogView("\n");
-                                        refreshLogView("[2]猝发长码报文校验成功！");
+                                        refreshLogView("[2]测试长码报文校验成功！");
                                         refreshLogView("\n");
                                         System.out.println("准备发送连接应答！");
                                     }
                                     else {
-                                        refreshLogView("[2]接收到猝发长码报文，内容：" + "\n" + content);
+                                        refreshLogView("[2]接收到测试长码报文，内容：" + "\n" + content);
                                         refreshLogView("\n");
-                                        refreshLogView("[2]猝发长码报文校验失败！");
+                                        refreshLogView("[2]测试长码报文校验失败！");
                                         refreshLogView("\n");
                                         return ;
                                     }
@@ -2420,7 +2420,7 @@ public class HalfDuplex extends AppCompatActivity {
     }
 
     /**
-     * 发送猝发莫尔斯长码
+     * 发送测试莫尔斯长码
      * @param content
      * @param wpm
      */
@@ -2495,7 +2495,7 @@ public class HalfDuplex extends AppCompatActivity {
                             e.printStackTrace();
                         }
                         onAudioPlaybackComplete();
-                        refreshLogView("[6]猝发连接报文发送完成!");
+                        refreshLogView("[6]测试连接报文发送完成!");
                         refreshLogView("\n");
 
                         System.out.println("播放完成！");
@@ -2716,7 +2716,7 @@ public class HalfDuplex extends AppCompatActivity {
 
 
     /**
-     * 发送猝发莫尔斯长码
+     * 发送测试莫尔斯长码
      * @param content
      * @param wpm
      */

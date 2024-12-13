@@ -29,7 +29,7 @@
             app:layout_constraintHorizontal_bias="0.85"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/shortCode_input"
-            app:layout_constraintWidth_percent="0.40"
+            app:layout_constraintWidth_percent="0.35"
             tools:ignore="TouchTargetSizeCheck" />
 
         <EditText
@@ -312,7 +312,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/shortCode_input"
             app:layout_constraintVertical_bias="0.0"
-            app:layout_constraintWidth_percent="0.25"
+            app:layout_constraintWidth_percent="0.3"
             tools:ignore="TouchTargetSizeCheck" />
 
         <TextView

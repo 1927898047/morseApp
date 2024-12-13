@@ -12,8 +12,7 @@
         android:id="@+id/pcmRadioGroup2"
         android:layout_width="wrap_content"
         android:layout_height="48dp"
-
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="5dp"
         android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
@@ -170,18 +169,6 @@
         app:layout_constraintTop_toTopOf="parent" />
 
 
-    <Button
-        android:id="@+id/audio_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/audio_button"
-        android:layout_marginTop="5dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/guideline3"
-        />
-
     <EditText
         android:id="@+id/input_text"
         android:layout_width="0dp"
@@ -207,30 +194,78 @@
 
     <Button
         android:id="@+id/char_to_morse_button"
-        android:layout_width="wrap_content"
-        android:layout_height="48dp"
-        android:layout_marginStart="100dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="100dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:text="@string/char_to_morse_button"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="5dp"
+        app:layout_constraintEnd_toStartOf="@+id/audio_button"
+        app:layout_constraintHeight_percent="0.07"
+        app:layout_constraintWidth_percent="0.4"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/input_text" />
 
     <Button
+        android:id="@+id/audio_button"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="@string/audio_button"
+        android:layout_marginTop="5dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.07"
+        app:layout_constraintWidth_percent="0.4"
+        app:layout_constraintStart_toEndOf="@+id/char_to_morse_button"
+        app:layout_constraintTop_toBottomOf="@+id/input_text" />
+
+    <TextView
+        android:id="@+id/snr1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginStart="10dp"
+        android:background="@drawable/translucent_background"
+        android:enabled="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:longClickable="true"
+        android:text="信噪比"
+        android:textIsSelectable="true"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        android:textColor="@color/text_color"
+        app:layout_constraintHeight_percent="0.06"
+        app:layout_constraintWidth_percent="0.4"
+        app:layout_constraintEnd_toStartOf="@+id/snr_spinner1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pcmRadioGroup1" />
+
+    <Spinner
+        android:id="@+id/snr_spinner1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="10dp"
+        android:background="@drawable/spinner_background"
+        android:popupBackground="@drawable/translucent"
+        android:textStyle="bold"
+        android:spinnerMode="dropdown"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.85"
+        app:layout_constraintHeight_percent="0.06"
+        app:layout_constraintWidth_percent="0.40"
+        app:layout_constraintStart_toEndOf="@+id/snr1"
+        app:layout_constraintTop_toBottomOf="@+id/pcmRadioGroup1"
+        tools:ignore="MissingConstraints" />
+
+    <Button
         android:id="@+id/half_duplex_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:text="@string/half_duplex_button"
+        app:layout_constraintHeight_percent="0.07"
+        app:layout_constraintWidth_percent="0.4"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/audio_button" />
+        app:layout_constraintTop_toBottomOf="@+id/snr1" />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.75" />
 </androidx.constraintlayout.widget.ConstraintLayout>
