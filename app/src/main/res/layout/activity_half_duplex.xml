@@ -83,7 +83,7 @@
             android:ems="10"
             android:gravity="center"
             android:hint="@string/longCode_speed_input"
-            android:text="25"
+            android:text="35"
             android:autofillHints="@string/longCode_speed_input"
             android:inputType="textPersonName"
             android:textCursorDrawable="@drawable/edittext_cursor"
