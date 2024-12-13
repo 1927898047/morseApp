@@ -27,7 +27,7 @@
     <string name="switch_to_socket">参数设置\n和后台通信</string>
     <string name="char_to_morse_button">字符转摩尔斯码</string>
     <string name="switch_to_shortCode_button">长码编码\n(点击切换)</string>
-    <string name="switch_to_record">录音和\n解码设置</string>
+    <string name="switch_to_record">录音和\n解码测试</string>
     <string name="switch_to_longCode_button">短码编码\n(点击切换)</string>
     <string name="wpmButton_30">30wpm</string>
     <string name="wpmButton_25">25wpm</string>
