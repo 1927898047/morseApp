@@ -3,6 +3,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -38,10 +40,8 @@ public class ShortCoder extends AppCompatActivity {
     public static String shortMorseContentForPtt = "";
 
 
-    private Button char_to_morse_button=null;
-    private Button morse_to_char_button=null;
     private Button audio_button=null;
-
+    private EditText input_text;
     private Button switch_to_longCoder=null;
     private Button switch_to_socket=null;
     private Button switch_to_record=null;
@@ -75,11 +75,9 @@ public class ShortCoder extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_short_encoder);
 
-
         MyOnClick myOnClick=new MyOnClick();
 
         //控件初始化
-        char_to_morse_button=findViewById(R.id.char_to_morse_button);
         audio_button=findViewById(R.id.audio_button);
 
         //页面切换按钮
@@ -87,21 +85,17 @@ public class ShortCoder extends AppCompatActivity {
         switch_to_socket = findViewById(R.id.switch_to_socket_button);
         switch_to_record = findViewById(R.id.button_switch_record);
         half_duplex_button = findViewById(R.id.half_duplex_button);
-
-        pcmRadioGroup1 = findViewById(R.id.pcmRadioGroup1);
-        pcmRadioGroup2 = findViewById(R.id.pcmRadioGroup2);
+        input_text = findViewById(R.id.input_text);
 
         //设置监听函数
         audio_button.setOnClickListener(myOnClick);
-        char_to_morse_button.setOnClickListener(myOnClick);
 
         switch_to_longCoder.setOnClickListener(myOnClick);
         switch_to_socket.setOnClickListener(myOnClick);
         switch_to_record.setOnClickListener(myOnClick);
         half_duplex_button.setOnClickListener(myOnClick);
 
-        pcmRadioGroup1.setOnCheckedChangeListener(new MyPcm());
-        pcmRadioGroup2.setOnCheckedChangeListener(new MyPcm());
+
         context=MyApplication.getContext();
         Permission.checkPermission(this);
 
@@ -171,53 +165,84 @@ public class ShortCoder extends AppCompatActivity {
                 // 可以在没有选项被选中时做一些处理
             }
         });
-    }
 
 
+        // 信噪比下拉框
+        // 在你的Activity或Fragment中
+        Spinner shortCodeSpeedSpinner = findViewById(R.id.shortCodeSpeed_spinner);
+        // 定义下拉列表的选项
+        String[] itemsForShortCodeSpeed = new String[] {"15wpm", "20wpm", "25wpm", "30wpm","35wpm", "40wpm", "45wpm", "50wpm"};
+        // 创建适配器
+        ArrayAdapter<String> adapterForShortCodeSpeed = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, itemsForShortCodeSpeed);
 
-
-    /**
-     * WPM控件响应
-     */
-    class MyPcm implements RadioGroup.OnCheckedChangeListener{
-        @Override
-        public void onCheckedChanged(RadioGroup group, int checkedId) {
-            switch (checkedId){
-                case R.id.wpmButton_15:
-                    wpm=15;
-                    pcmRadioGroup2.clearCheck();
-                    break;
-                case R.id.wpmButton_20:
-                    wpm=20;
-                    pcmRadioGroup2.clearCheck();
-                    break;
-                case R.id.wpmButton_25:
-                    wpm=25;
-                    pcmRadioGroup2.clearCheck();
-                    break;
-                case R.id.wpmButton_30:
-                    wpm=30;
-                    pcmRadioGroup2.clearCheck();
-                    break;
-                case R.id.wpmButton_35:
-                    wpm=35;
-                    pcmRadioGroup1.clearCheck();
-                    break;
-                case R.id.wpmButton_40:
-                    wpm=40;
-                    pcmRadioGroup1.clearCheck();
-                    break;
-                case R.id.wpmButton_45:
-                    wpm=45;
-                    pcmRadioGroup1.clearCheck();
-                    break;
-                case R.id.wpmButton_50:
-                    wpm=50;
-                    pcmRadioGroup1.clearCheck();
-                    break;
-                default:
-                    break;
+        // 设置下拉列表的下拉样式（可选）
+        adapterForShortCodeSpeed.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // 将适配器设置给Spinner
+        shortCodeSpeedSpinner.setAdapter(adapterForShortCodeSpeed);
+        shortCodeSpeedSpinner.setSelection(1);
+        // 设置监听器
+        shortCodeSpeedSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                // 获取选中项的文本
+                String selectedItemText = (String) parent.getItemAtPosition(position);
+                // 根据选中项做进一步处理
+                System.out.println(selectedItemText);
+                switch (selectedItemText) {
+                    case "15wpm":
+                        wpm = 15;
+                        break;
+                    case "20wpm":
+                        wpm = 20;
+                        break;
+                    case "25wpm":
+                        wpm = 25;
+                        break;
+                    case "30wpm":
+                        wpm = 30;
+                        break;
+                    case "35wpm":
+                        wpm = 35;
+                        break;
+                    case "40wpm":
+                        wpm = 40;
+                        break;
+                    case "45wpm":
+                        wpm = 45;
+                        break;
+                    case "50wpm":
+                        wpm = 50;
+                        break;
+                }
             }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // 可以在没有选项被选中时做一些处理
+            }
+        });
+
+
+        input_text.setMovementMethod(ScrollingMovementMethod.getInstance());
+        input_text.setMaxLines(Integer.MAX_VALUE); // 设置足够大的行数以容纳所有文本
+        input_text.setScrollContainer(true);
+        input_text.setFocusable(true);
+        input_text.setSelected(true);
+
+        input_text.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_MOVE) {
+                    view.getParent().requestDisallowInterceptTouchEvent(true);
+                }
+                return false;
+            }
+        });
+
+        try {
+            isPlayAudio = FileUtils.readTxt(context.getExternalFilesDir("").getAbsolutePath()+"/isPlayAudio.txt").equals("1");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -228,36 +253,33 @@ public class ShortCoder extends AppCompatActivity {
      * 3.切换界面
      */
     class MyOnClick implements View.OnClickListener  {
-        EditText input_text=findViewById(R.id.input_text);
-        TextView output_text =findViewById(R.id.output);
+
         MorseShortCoder morseShortCoder = new MorseShortCoder();
         MorseAudio morseAudio=new MorseAudio();
         @Override
         public void onClick(View view) {
             switch (view.getId()){
-                //字符转摩尔斯码
-                case R.id.char_to_morse_button:
-
-                    str_char=input_text.getText().toString();
-                    shortMorseContentForPtt = str_morse;
-
-                    String regex = ".*[a-zA-z].*";
-                    if(str_char.equals("")){
-                        Toast.makeText(ShortCoder.this,"输入内容不能为空！",Toast.LENGTH_LONG).show();
-                    }
-                    else if(str_char.matches(regex)){
-                        Toast.makeText(ShortCoder.this,"输入内容不能包含英文！",Toast.LENGTH_LONG).show();
-                        break;
-                    }
-                    else{
-                        str_morse= morseShortCoder.encode(str_char);
-                        output_text.setText(str_morse);
-                    }
-                    shortMorseContentForPtt = str_morse;
-
-                    break;
                 case R.id.audio_button:
                     try {
+                        // 字符转摩尔斯
+                        str_char=input_text.getText().toString();
+                        shortMorseContentForPtt = str_morse;
+
+                        String regex = ".*[a-zA-z].*";
+                        if(str_char.equals("")){
+                            Toast.makeText(ShortCoder.this,"输入内容不能为空！",Toast.LENGTH_LONG).show();
+                        }
+                        else if(str_char.matches(regex)){
+                            Toast.makeText(ShortCoder.this,"输入内容不能包含英文！",Toast.LENGTH_LONG).show();
+                            break;
+                        }
+                        else{
+                            str_morse= morseShortCoder.encode(str_char);
+                        }
+                        shortMorseContentForPtt = str_morse;
+
+
+                        // 生成音频播放
                         if(str_morse==null || str_char.equals("")){
                             Toast.makeText(ShortCoder.this,"输入内容为空，无法进行编码！",Toast.LENGTH_LONG).show();
                             break;

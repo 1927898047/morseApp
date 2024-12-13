@@ -105,12 +105,12 @@
         android:textColor="@color/text_color"
         app:layout_constraintHeight_percent="0.06"
         app:layout_constraintWidth_percent="0.4"
-        app:layout_constraintEnd_toStartOf="@+id/codeSpeed_spinner"
+        app:layout_constraintEnd_toStartOf="@+id/longCodeSpeed_spinner"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/input_text" />
 
     <Spinner
-        android:id="@+id/codeSpeed_spinner"
+        android:id="@+id/longCodeSpeed_spinner"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="5dp"
@@ -145,12 +145,12 @@
         android:textColor="@color/text_color"
         app:layout_constraintHeight_percent="0.06"
         app:layout_constraintWidth_percent="0.4"
-        app:layout_constraintEnd_toStartOf="@+id/snr_spinner1"
+        app:layout_constraintEnd_toStartOf="@+id/snr_spinner2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/codeSpeed" />
 
     <Spinner
-        android:id="@+id/snr_spinner1"
+        android:id="@+id/snr_spinner2"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="5dp"
@@ -164,7 +164,7 @@
         app:layout_constraintHeight_percent="0.06"
         app:layout_constraintWidth_percent="0.40"
         app:layout_constraintStart_toEndOf="@+id/snr1"
-        app:layout_constraintTop_toBottomOf="@+id/codeSpeed_spinner"
+        app:layout_constraintTop_toBottomOf="@+id/longCodeSpeed_spinner"
         tools:ignore="MissingConstraints" />
 
     <Button

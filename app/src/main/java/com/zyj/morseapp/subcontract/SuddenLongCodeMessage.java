@@ -26,14 +26,18 @@ public class SuddenLongCodeMessage {
     // 短码报文
     private String shortCodeContent;
 
+    // 附注信息
+    private String other;
+
     public SuddenLongCodeMessage(String senderId, String receiverId, String gLen, String gLenSum,
-                                 int communicationId, String shortCodeContent){
+                                 int communicationId, String shortCodeContent, String other){
         this.senderId = senderId;
         this.receiverId = receiverId;
         this.gLen = gLen;
         this.gLenSum = gLenSum;
         this.communicationId = communicationId;
         this.shortCodeContent = shortCodeContent;
+        this.other = other;
     }
 
 
@@ -46,7 +50,8 @@ public class SuddenLongCodeMessage {
                 + gLen + " "
                 + gLenSum + " "
                 + communicationId + " "
-                + shortCodeContent + " ";
+                + shortCodeContent + " "
+                + other + " ";
 
         String temp = "DE" + " "
                 + senderId + " "
@@ -55,7 +60,8 @@ public class SuddenLongCodeMessage {
                 + gLen + " "
                 + gLenSum + " "
                 + communicationId + " "
-                + shortCodeContent + " ";
+                + shortCodeContent + " "
+                + other + " ";
 
         longCrc = MessageUtils.getCRC16(temp.trim());
         longCodeMessage = longCodeMessage + longCrc + " " + tail;

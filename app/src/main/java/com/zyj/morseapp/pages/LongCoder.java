@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -35,7 +37,7 @@ import java.nio.ByteOrder;
  */
 public class LongCoder extends AppCompatActivity {
 
-    private Button char_to_morse_button=null;
+    private EditText input_text;
     private Button audio_button=null;
     private Button switch_nextPage=null;
     private RadioGroup pcmRadioGroup1=null;
@@ -80,28 +82,21 @@ public class LongCoder extends AppCompatActivity {
         intent = new Intent();
 
         MyOnClick myOnClick=new MyOnClick();
-        MyPcm myPcm = new MyPcm();
 
         //控件初始化
-        char_to_morse_button=findViewById(R.id.char_to_morse_button);
         audio_button=findViewById(R.id.audio_button);
         switch_nextPage = findViewById(R.id.switch_to_shortCode_button);
         half_duplex_button = findViewById(R.id.half_duplex_button);
-
-        pcmRadioGroup1 = findViewById(R.id.pcmRadioGroup1);
-        pcmRadioGroup2 = findViewById(R.id.pcmRadioGroup2);
+        input_text = findViewById(R.id.input_text);
 
         switch_to_socket_button=findViewById(R.id.switch_to_socket);
         button_switch_record=findViewById(R.id.switch_to_record);
 
         //设置监听回调函数
         audio_button.setOnClickListener(myOnClick);
-        char_to_morse_button.setOnClickListener(myOnClick);
         switch_nextPage.setOnClickListener(myOnClick);
         half_duplex_button.setOnClickListener(myOnClick);
 
-        pcmRadioGroup1.setOnCheckedChangeListener(new MyPcm());
-        pcmRadioGroup2.setOnCheckedChangeListener(new MyPcm());
 
         switch_to_socket_button.setOnClickListener(myOnClick);
         button_switch_record.setOnClickListener(myOnClick);
@@ -109,108 +104,136 @@ public class LongCoder extends AppCompatActivity {
 
         mediaPlayer = new MediaPlayer();
 
+//         信噪比下拉框
+//         在你的Activity或Fragment中
+        Spinner spinner = findViewById(R.id.snr_spinner2);
+        // 定义下拉列表的选项
+        String[] items = new String[] {"无噪声", "1dB", "-5dB", "-7dB","-11dB", "-12dB"};
+        // 创建适配器
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, items);
+
+        // 设置下拉列表的下拉样式（可选）
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // 将适配器设置给Spinner
+        spinner.setAdapter(adapter);
+        spinner.setSelection(1);
+        // 设置监听器
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                // 获取选中项的文本
+                String selectedItemText = (String) parent.getItemAtPosition(position);
+                // 根据选中项做进一步处理
+                System.out.println(selectedItemText);
+                switch (selectedItemText) {
+                    case "无噪声":
+                        gussianNoise = 0;
+                        break;
+                    case "1dB":
+                        gussianNoise = 7130;
+                        break;
+                    case "-5dB":
+                        gussianNoise = 14266;
+                        break;
+                    case "-7dB":
+                        gussianNoise = 17910;
+                        break;
+                    case "-11dB":
+                        gussianNoise = 28385;
+                        break;
+                    case "-12dB":
+                        gussianNoise = 31849;
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // 可以在没有选项被选中时做一些处理
+            }
+        });
+
+
         // 信噪比下拉框
         // 在你的Activity或Fragment中
-//        Spinner spinner = findViewById(R.id.snr_spinner2);
-//        // 定义下拉列表的选项
-//        String[] items = new String[] {"无噪声", "1dB", "-5dB", "-7dB","-11dB", "-12dB"};
-//        // 创建适配器
-//        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, items);
-//
-//        // 设置下拉列表的下拉样式（可选）
-//        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//        // 将适配器设置给Spinner
-//        spinner.setAdapter(adapter);
-//        spinner.setSelection(1);
-//        // 设置监听器
-//        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            @Override
-//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//                // 获取选中项的文本
-//                String selectedItemText = (String) parent.getItemAtPosition(position);
-//                // 根据选中项做进一步处理
-//                System.out.println(selectedItemText);
-//                switch (selectedItemText) {
-//                    case "无噪声":
-//                        gussianNoise = 0;
-//                        break;
-//                    case "1dB":
-//                        gussianNoise = 7130;
-//                        break;
-//                    case "-5dB":
-//                        gussianNoise = 14266;
-//                        break;
-//                    case "-7dB":
-//                        gussianNoise = 17910;
-//                        break;
-//                    case "-11dB":
-//                        gussianNoise = 28385;
-//                        break;
-//                    case "-12dB":
-//                        gussianNoise = 31849;
-//                        break;
-//                }
-//            }
-//
-//            @Override
-//            public void onNothingSelected(AdapterView<?> parent) {
-//                // 可以在没有选项被选中时做一些处理
-//            }
-//        });
-    }
+        Spinner longCodeSpeedSpinner = findViewById(R.id.longCodeSpeed_spinner);
+        // 定义下拉列表的选项
+        String[] itemsForLongCodeSpeed = new String[] {"15wpm", "20wpm", "25wpm", "30wpm","35wpm", "40wpm", "45wpm", "50wpm"};
+        // 创建适配器
+        ArrayAdapter<String> adapterForLongCodeSpeed = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, itemsForLongCodeSpeed);
 
-    /**
-     * WPM控件响应
-     */
-    class MyPcm implements RadioGroup.OnCheckedChangeListener{
-        @Override
-        public void onCheckedChanged(RadioGroup group, int checkedId) {
-            switch (checkedId){
-                case R.id.wpmButton_15:
-                    setWpm(15);
-                    pcmRadioGroup2.clearCheck();
-                    break;
-                case R.id.wpmButton_20:
-                    setWpm(20);
-
-                    pcmRadioGroup2.clearCheck();
-                    break;
-                case R.id.wpmButton_25:
-                    setWpm(25);
-
-
-                    pcmRadioGroup2.clearCheck();
-                    break;
-                case R.id.wpmButton_30:
-                    setWpm(30);
-
-                    pcmRadioGroup2.clearCheck();
-                    break;
-                case R.id.wpmButton_35:
-                    setWpm(35);
-
-
-                    pcmRadioGroup1.clearCheck();
-                    break;
-                case R.id.wpmButton_40:
-                    setWpm(40);
-
-                    pcmRadioGroup1.clearCheck();
-                    break;
-                case R.id.wpmButton_45:
-                    setWpm(45);
-                    pcmRadioGroup1.clearCheck();
-                    break;
-                case R.id.wpmButton_50:
-                    setWpm(50);
-
-                    pcmRadioGroup1.clearCheck();
-                    break;
-                default:
-                    break;
+        // 设置下拉列表的下拉样式（可选）
+        adapterForLongCodeSpeed.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // 将适配器设置给Spinner
+        longCodeSpeedSpinner.setAdapter(adapterForLongCodeSpeed);
+        longCodeSpeedSpinner.setSelection(1);
+        // 设置监听器
+        longCodeSpeedSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                // 获取选中项的文本
+                String selectedItemText = (String) parent.getItemAtPosition(position);
+                // 根据选中项做进一步处理
+                System.out.println(selectedItemText);
+                switch (selectedItemText) {
+                    case "15wpm":
+                        wpm = 15;
+                        break;
+                    case "20wpm":
+                        wpm = 20;
+                        break;
+                    case "25wpm":
+                        wpm = 25;
+                        break;
+                    case "30wpm":
+                        wpm = 30;
+                        break;
+                    case "35wpm":
+                        wpm = 35;
+                        break;
+                    case "40wpm":
+                        wpm = 40;
+                        break;
+                    case "45wpm":
+                        wpm = 45;
+                        break;
+                    case "50wpm":
+                        wpm = 50;
+                        break;
+                }
             }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // 可以在没有选项被选中时做一些处理
+            }
+        });
+
+
+        input_text.setMovementMethod(ScrollingMovementMethod.getInstance());
+        input_text.setMaxLines(Integer.MAX_VALUE); // 设置足够大的行数以容纳所有文本
+        input_text.setScrollContainer(true);
+        input_text.setFocusable(true);
+        input_text.setSelected(true);
+
+        input_text.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_MOVE) {
+                    view.getParent().requestDisallowInterceptTouchEvent(true);
+                }
+                return false;
+            }
+        });
+
+        try {
+            isPlayAudio = FileUtils.readTxt(context.getExternalFilesDir("").getAbsolutePath()+"/isPlayAudio.txt").equals("1");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
+
+
 
     /**
      * 1.字符转摩尔斯码
@@ -219,28 +242,27 @@ public class LongCoder extends AppCompatActivity {
      */
     class MyOnClick implements View.OnClickListener  {
 
-        EditText input_text=findViewById(R.id.input_text);
-        TextView output_text =findViewById(R.id.output);
         MorseLongCoder morseLongCoder = new MorseLongCoder();
         MorseAudio morseAudio=new MorseAudio();
         @Override
         public void onClick(View view) {
             switch (view.getId()){
-                case R.id.char_to_morse_button:
-                    str_morse="";
-                    str_char="";
-                    str_char=input_text.getText().toString();
-                    if(str_char.equals("")){
-                        Toast.makeText(LongCoder.this,"输入内容不能为空！",Toast.LENGTH_LONG).show();
-                    }
-                    else{
-                        str_morse= morseLongCoder.encode(str_char);
-                        output_text.setText(str_morse);
-                    }
-                    longMorseContentForPtt = str_morse;
-                    break;
                 case R.id.audio_button:
                     try {
+                        // 字符转摩尔斯
+                        str_morse="";
+                        str_char="";
+                        str_char=input_text.getText().toString();
+                        if(str_char.equals("")){
+                            Toast.makeText(LongCoder.this,"输入内容不能为空！",Toast.LENGTH_LONG).show();
+                        }
+                        else{
+                            str_morse= morseLongCoder.encode(str_char);
+                        }
+                        longMorseContentForPtt = str_morse;
+
+
+                        // 编码并播放音频
                         if(str_morse.equals("") || str_morse==null){
                             Toast.makeText(LongCoder.this,"输入内容为空，无法进行编码！",Toast.LENGTH_LONG).show();
                             break;

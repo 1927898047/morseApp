@@ -365,6 +365,13 @@ public class HalfDuplex extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+
+        try {
+            isPlayAudio = FileUtils.readTxt(context.getExternalFilesDir("").getAbsolutePath()+"/isPlayAudio.txt").equals("1");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -1396,7 +1403,7 @@ public class HalfDuplex extends AppCompatActivity {
 //                    String level = longCodeLevel.getText().toString() == null || longCodeLevel.getText().toString().equals("") ? "0" : longCodeLevel.getText().toString();
 //                    String mmDD = longCodeMMDD.getText().toString() == null || longCodeMMDD.getText().toString().equals("") ? "0820" : longCodeMMDD.getText().toString();
 //                    String hhMM = longCodeHHMM.getText().toString() == null || longCodeHHMM.getText().toString().equals("") ? "1255" : longCodeHHMM.getText().toString();
-                    String other = longCodeOther.getText().toString() == null || longCodeOther.getText().toString().equals("") ? "0" : longCodeOther.getText().toString();
+                    other = longCodeOther.getText().toString() == null || longCodeOther.getText().toString().equals("") ? "0" : longCodeOther.getText().toString();
 
                     shortCodeWpm = Integer.parseInt((shortCodeSpeedInput.getText().toString() == null) || (shortCodeSpeedInput.getText().toString().equals("")) ? String.valueOf(shortCodeWpm) : shortCodeSpeedInput.getText().toString());
                     maxGLen = (maxGLenInput.getText().toString() == null) || (maxGLenInput.getText().toString().equals("")) ? 5 : Integer.parseInt(maxGLenInput.getText().toString());
@@ -1466,10 +1473,6 @@ public class HalfDuplex extends AppCompatActivity {
                         startRecording();
                         start_half_duplex.setText("停止半双工通信");
 
-//                        audioRecord.startRecording();
-//                        start_half_duplex.setText("停止半双工通信");
-//                        // 开始定时读取缓冲区的任务
-//                        handler.post(readBufferTask);
                         try {
                             refreshIsPlayAudio();
                         } catch (IOException e) {
@@ -1503,6 +1506,7 @@ public class HalfDuplex extends AppCompatActivity {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+                    other = longCodeOther.getText().toString() == null || longCodeOther.getText().toString().equals("") ? "0" : longCodeOther.getText().toString();
 
 
                     try {
@@ -1526,7 +1530,7 @@ public class HalfDuplex extends AppCompatActivity {
                     Arrays.fill(shortMorseCheckFlag, 1);
                     // 构建长码报文
                     suddenLongCodeMessage = new SuddenLongCodeMessage(myDeviceId, destDeviceId, String.valueOf(maxGLen),
-                            String.valueOf(gLenSum), communicationIdForSend, shortContent);
+                            String.valueOf(gLenSum), communicationIdForSend, shortContent, other);
                     longCodeMessageContent = suddenLongCodeMessage.getLongCodeMessage();
                     longMorseContent = morseLongCoder.encode(longCodeMessageContent);
 
